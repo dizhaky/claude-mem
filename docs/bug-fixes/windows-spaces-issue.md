@@ -28,6 +28,7 @@ ERROR [SESSION] Generator exited unexpectedly
 Two issues in the Windows code path:
 
 1. **`SDKAgent.ts`** - Returns full auto-detected path with spaces:
+
    ```
    C:\Users\Anderson Wang\AppData\Roaming\npm\claude.cmd
    ```
@@ -85,6 +86,7 @@ if (useCmdWrapper) {
 ## Testing
 
 Verified on Windows 11 with username containing spaces:
+
 - PostToolUse hook completes successfully
 - Observations are stored to database
 - No more "process exited with code 1" errors

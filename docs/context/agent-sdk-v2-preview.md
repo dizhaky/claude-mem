@@ -60,6 +60,7 @@ for await (const msg of q) {
 ### Basic session
 
 For interactions beyond a single prompt, create a session. V2 separates sending and receiving into distinct steps:
+
 - `send()` dispatches your message
 - `receive()` streams back the response
 

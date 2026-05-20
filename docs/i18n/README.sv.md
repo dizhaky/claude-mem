@@ -116,12 +116,12 @@ Starta om Claude Code. Kontext från tidigare sessioner kommer automatiskt att v
 - 🧠 **Persistent minne** - Kontext överlever mellan sessioner
 - 📊 **Progressiv visning** - Skiktad minneshämtning med synlighet för tokenkostnad
 - 🔍 **Färdighetsbaserad sökning** - Sök i din projekthistorik med mem-search-färdigheten
-- 🖥️ **Webbvy-gränssnitt** - Realtidsminnesström på http://localhost:37777
+- 🖥️ **Webbvy-gränssnitt** - Realtidsminnesström på <http://localhost:37777>
 - 💻 **Claude Desktop-färdighet** - Sök i minnet från Claude Desktop-konversationer
 - 🔒 **Integritetskontroll** - Använd `<private>`-taggar för att exkludera känsligt innehåll från lagring
 - ⚙️ **Kontextkonfiguration** - Detaljerad kontroll över vilken kontext som injiceras
 - 🤖 **Automatisk drift** - Ingen manuell hantering krävs
-- 🔗 **Citeringar** - Referera till tidigare observationer med ID:n (tillgängliga via http://localhost:37777/api/observation/{id} eller visa alla i webbvyn på http://localhost:37777)
+- 🔗 **Citeringar** - Referera till tidigare observationer med ID:n (tillgängliga via <http://localhost:37777/api/observation/{id}> eller visa alla i webbvyn på <http://localhost:37777>)
 - 🧪 **Betakanal** - Testa experimentella funktioner som Endless Mode via versionsväxling
 
 ---
@@ -180,6 +180,7 @@ Se [Arkitekturöversikt](https://docs.claude-mem.ai/architecture/overview) för 
 Claude-Mem tillhandahåller intelligent sökning genom mem-search-färdigheten som automatiskt aktiveras när du frågar om tidigare arbete:
 
 **Hur det fungerar:**
+
 - Fråga bara naturligt: *"Vad gjorde vi förra sessionen?"* eller *"Fixade vi den här buggen tidigare?"*
 - Claude aktiverar automatiskt mem-search-färdigheten för att hitta relevant kontext
 
@@ -212,7 +213,7 @@ Se [Sökverktygsguide](https://docs.claude-mem.ai/usage/search-tools) för detal
 
 ## Betafunktioner
 
-Claude-Mem erbjuder en **betakanal** med experimentella funktioner som **Endless Mode** (biomimetisk minnesarkitektur för utökade sessioner). Växla mellan stabila och betaversioner från webbvy-gränssnittet på http://localhost:37777 → Settings.
+Claude-Mem erbjuder en **betakanal** med experimentella funktioner som **Endless Mode** (biomimetisk minnesarkitektur för utökade sessioner). Växla mellan stabila och betaversioner från webbvy-gränssnittet på <http://localhost:37777> → Settings.
 
 Se **[Dokumentation för betafunktioner](https://docs.claude-mem.ai/beta-features)** för detaljer om Endless Mode och hur du testar det.
 
@@ -286,7 +287,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Support
 

@@ -3,6 +3,7 @@
 **Goal:** Move all heavy install work (Bun/uv install, `bun install` in plugin cache) into the `npx claude-mem install` flow with a visible spinner. Make hooks runtime-only — never installers.
 
 **Net effect:**
+
 - `smart-install.js` runs in normal Claude Code lifecycle: 3 → 0 (or 1 via `npx claude-mem repair` after `claude plugin update`)
 - 30s silent dead air → visible spinner during `npx`
 - `npx claude-mem repair` becomes the canonical recovery entry point
@@ -81,6 +82,7 @@ export function isInstallCurrent(targetDir: string, expectedVersion: string): bo
 | Top-level `try { … }` (lines 248–264) | DELETE — caller orchestrates |
 
 **Key behavioral differences from smart-install.js:**
+
 - All functions take `targetDir` as a parameter (was a top-level `ROOT` constant).
 - `ensureBun()` / `ensureUv()` return their version strings rather than logging — caller decides what to display.
 - All functions throw on failure with descriptive `Error.message`. The `clack` `runTasks` wrapper in Phase 2 catches and renders.
@@ -88,11 +90,13 @@ export function isInstallCurrent(targetDir: string, expectedVersion: string): bo
 - Marker schema is preserved exactly (`{ version, bun, uv, installedAt }`) so existing readers in `ContextBuilder.ts:36` and `BranchManager.ts:173,228` continue to work.
 
 **Verification checklist:**
+
 - [ ] `bun build src/npx-cli/install/setup-runtime.ts --target=node` succeeds (or whatever the project's TS check command is — confirm via `package.json#scripts`)
 - [ ] Marker file format is byte-identical to smart-install.js output (write a marker, diff against a marker written by the old code)
 - [ ] `grep -rn "ROOT" src/npx-cli/install/setup-runtime.ts` returns nothing — no top-level constants
 
 **Anti-pattern guards:**
+
 - ❌ Do not invent a `bunInstall.ts` or `uvInstall.ts` split — keep all three in one file. They share helper code (paths, version probing).
 - ❌ Do not import from `plugin/scripts/smart-install.js` — it gets deleted in Phase 5.
 - ❌ Do not change the marker schema. Existing readers depend on `{ version }` field.
@@ -126,9 +130,11 @@ import {
 ### Edit 2C — Drop `needsManualInstall` gating, ungate the runTasks block
 
 **Line 589** currently reads:
+
 ```ts
 const needsManualInstall = selectedIDEs.some((id) => id !== 'claude-code');
 ```
+
 **Delete line 589.** Update line 593's `if (needsManualInstall) {` to just `{` (or unwrap the block — preferred). The `runTasks` block at lines 604–664 now runs unconditionally.
 
 **Within that runTasks block:** delete the "Setting up Bun and uv" task entry (lines 656–663). Replace its slot with the new "Setting up runtime" task (Edit 2D).
@@ -162,6 +168,7 @@ Place this AFTER the "Installing dependencies" (npm install) task — same order
 ### Edit 2E — Neuter the claude-code shell-out in `setupIDEs`
 
 **Lines 110–123 currently:**
+
 ```ts
 case 'claude-code': {
   try {
@@ -180,6 +187,7 @@ case 'claude-code': {
 ```
 
 **Replace with:**
+
 ```ts
 case 'claude-code': {
   log.success('Claude Code: plugin registered (cache + settings written by npx).');
@@ -233,6 +241,7 @@ export async function runRepairCommand(): Promise<void> {
 `runRepairCommand` always runs the install (no `isInstallCurrent` short-circuit) — the user invoked `repair` because something is wrong, so don't gate on the marker.
 
 **Verification checklist:**
+
 - [ ] `grep -n "needsManualInstall" src/npx-cli/commands/install.ts` returns nothing
 - [ ] `grep -n "runSmartInstall" src/npx-cli/commands/install.ts` returns nothing
 - [ ] `grep -n "claude plugin install" src/npx-cli/commands/install.ts` returns nothing
@@ -241,6 +250,7 @@ export async function runRepairCommand(): Promise<void> {
 - [ ] `runInstallCommand` still exports the same `InstallOptions` shape (Phase 3 needs it untouched)
 
 **Anti-pattern guards:**
+
 - ❌ Do not delete `runNpmInstallInMarketplace()` — it's still needed for the marketplace dir copy step (other IDEs use that dir).
 - ❌ Do not delete `copyPluginToMarketplace()` — non-claude-code IDEs read from `marketplaceDirectory()`.
 - ❌ Do not delete the `if (alreadyInstalled)` overwrite-confirm block (lines 538–562) — user-facing UX preserved.
@@ -272,11 +282,13 @@ Place it adjacent to the `install` case for discoverability.
 If `src/npx-cli/index.ts` has a help/usage block (look for `case 'help':` or default case), add `repair` to the list of commands with description: `Repair claude-mem runtime (re-runs Bun/uv setup and bun install in plugin cache).`
 
 **Verification checklist:**
+
 - [ ] `npx claude-mem repair --help` (after build) shows the command
 - [ ] `npx claude-mem repair` runs `runRepairCommand` end to end on a corrupted cache (delete `.install-version` then run; should reinstall)
 - [ ] Help/usage output (if it exists) lists `repair`
 
 **Anti-pattern guards:**
+
 - ❌ Do not add CLI flag parsing for `repair` (no flags needed).
 - ❌ Do not duplicate the `runRepairCommand` body in `index.ts` — dynamic import only.
 
@@ -330,6 +342,7 @@ process.exit(0);
 ```
 
 **Behavior:**
+
 - Sub-100ms (two synchronous file reads + JSON.parse + string compare).
 - Always exits 0 (non-blocking) per the project's exit-code strategy in CLAUDE.md.
 - Stderr message tells the user exactly what to run if a mismatch is detected.
@@ -343,6 +356,7 @@ Concretely: the only change to line 11 is the trailing `smart-install.js` → `v
 ### Edit 4C — Delete SessionStart smart-install entry in `plugin/hooks/hooks.json`
 
 **Lines 17–40** — the SessionStart hook array currently has THREE hook entries:
+
 1. `node "$_R/scripts/smart-install.js"` (lines 21–26) — DELETE this entire entry
 2. `node "$_R/scripts/bun-runner.js" "$_R/scripts/worker-service.cjs" start` (lines 27–32) — KEEP
 3. `node "$_R/scripts/bun-runner.js" "$_R/scripts/worker-service.cjs" hook claude-code context` (lines 33–38) — KEEP
@@ -350,6 +364,7 @@ Concretely: the only change to line 11 is the trailing `smart-install.js` → `v
 After edit, the SessionStart `hooks` array has 2 entries instead of 3.
 
 **Verification checklist:**
+
 - [ ] `cat plugin/hooks/hooks.json | jq '.hooks.Setup[0].hooks[0].command' | grep version-check.js` succeeds
 - [ ] `cat plugin/hooks/hooks.json | jq '.hooks.SessionStart[0].hooks | length'` returns `2`
 - [ ] `grep -c "smart-install" plugin/hooks/hooks.json` returns `0`
@@ -357,6 +372,7 @@ After edit, the SessionStart `hooks` array has 2 entries instead of 3.
 - [ ] On a fresh checkout (no `.install-version` marker), version-check stderr says "run: npx claude-mem repair"
 
 **Anti-pattern guards:**
+
 - ❌ Do not change the exit code from 0 — Windows Terminal tab management depends on it (CLAUDE.md exit-code strategy).
 - ❌ Do not call out to Bun in version-check.js — Node-only, since this runs before we know Bun exists.
 - ❌ Do not add fancy logic (semver compare, partial recovery). String equality is correct: any version mismatch warrants a repair.
@@ -386,6 +402,7 @@ If the array becomes empty after the removal, also remove the entry — but per 
 **File to create:** `tests/setup-runtime.test.ts`
 
 Cover:
+
 - `readInstallMarker` returns `null` for missing file
 - `writeInstallMarker` produces a JSON object matching the smart-install.js schema (`{ version, bun, uv, installedAt }`)
 - `isInstallCurrent` returns `false` for missing marker, `false` for version mismatch, `true` for match
@@ -394,12 +411,14 @@ Cover:
 If you skip this, document why in the PR description.
 
 **Verification checklist:**
+
 - [ ] `find . -name "smart-install*" -not -path "*/node_modules/*"` returns no results
 - [ ] `grep -rn "smart-install" tests/` returns no results
 - [ ] `npm test` (or whatever the project uses) passes
 - [ ] If `tests/setup-runtime.test.ts` was added, it passes
 
 **Anti-pattern guards:**
+
 - ❌ Do not delete `tests/plugin-scripts-line-endings.test.ts` entirely — it tests other scripts too.
 - ❌ Do not delete `tests/bun-runner.test.ts` — bun-runner.js stays in this PR.
 
@@ -434,11 +453,13 @@ CLAUDE.md says: "No need to edit the changelog ever, it's generated automaticall
 The old `docs/reports/` archive was removed during later cleanup. Do not recreate it as part of this installer work.
 
 **Verification checklist:**
+
 - [ ] `grep -rn "smart-install" docs/public/` returns no results
 - [ ] `grep -rn "smart-install" docs/architecture-overview.md` returns no results
 - [ ] (Optional) Render docs locally via Mintlify dev server and visually scan the architecture page
 
 **Anti-pattern guards:**
+
 - ❌ Do not recreate the removed `docs/reports/` archive from this plan.
 - ❌ Do not edit CHANGELOG.md.
 
@@ -463,15 +484,18 @@ npm test
 ```
 
 Must be green. Likely failures to anticipate:
+
 - `plugin-scripts-line-endings.test.ts` if the `'smart-install.js'` entry was missed in Phase 5
 - Any test that imports from `scripts/smart-install.js` (discovery report says only `tests/smart-install.test.ts`, which Phase 5 deletes)
 
 ### Edit 7C — Manual fresh-install verification
 
 1. On a clean machine (or after `rm -rf ~/.claude/plugins/marketplaces/thedotmack ~/.claude/plugins/cache/thedotmack ~/.claude-mem`):
+
    ```bash
    npx claude-mem install
    ```
+
    Confirm:
    - Spinner says "Setting up runtime (first install can take ~30s)"
    - No silent dead air
@@ -481,14 +505,18 @@ Must be green. Likely failures to anticipate:
    - SessionStart fires fast (no smart-install delay)
    - No "claude plugin install" output
 3. Simulate a stale install:
+
    ```bash
    rm ~/.claude/plugins/cache/thedotmack/claude-mem/<version>/.install-version
    ```
+
    Open a new Claude Code session. Confirm version-check.js prints the "run: npx claude-mem repair" message to stderr.
 4. Run repair:
+
    ```bash
    npx claude-mem repair
    ```
+
    Confirm spinner runs through Bun/uv check + bun install + marker write, then exits clean.
 
 ### Edit 7D — Commit and open PR
@@ -496,6 +524,7 @@ Must be green. Likely failures to anticipate:
 Per the PR creation flow in the user's outer task. Don't auto-merge; the user wants a review loop.
 
 **Verification checklist:**
+
 - [ ] `npm run build-and-sync` exits 0
 - [ ] `npm test` exits 0
 - [ ] Manual fresh install completes with visible spinner, no silent dead air
@@ -503,6 +532,7 @@ Per the PR creation flow in the user's outer task. Don't auto-merge; the user wa
 - [ ] `npx claude-mem repair` runs end-to-end
 
 **Anti-pattern guards:**
+
 - ❌ Do not skip the manual verification — the whole point of this PR is UX (eliminating dead air). Type checks won't catch a regression.
 - ❌ Do not bump the version — version bump is handled separately by the version-bump skill.
 

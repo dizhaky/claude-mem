@@ -40,6 +40,7 @@ This document compares claude-mem's Claude Code hooks with the Cursor hooks impl
 **Status**: ✅ Complete parity via auto-updated rules file
 
 **How it works**:
+
 - Hook writes context to `.cursor/rules/claude-mem-context.mdc`
 - File has `alwaysApply: true` frontmatter
 - Cursor auto-includes this rule in all chat sessions
@@ -100,21 +101,25 @@ This document compares claude-mem's Claude Code hooks with the Cursor hooks impl
 ## Implementation Details
 
 ### Worker Health Checks
+
 - **Claude Code**: 75 retries × 200ms = 15 seconds
 - **Cursor**: 75 retries × 200ms = 15 seconds
 - **Status**: ✅ Match
 
 ### Error Handling
+
 - **Claude Code**: Fire-and-forget with logging
 - **Cursor**: Fire-and-forget with graceful exit (exit 0)
 - **Status**: ✅ Match (adapted for Cursor's hook system)
 
 ### Privacy Handling
+
 - **Claude Code**: Worker performs privacy checks, hooks respect `skipped` flag
 - **Cursor**: Worker performs privacy checks, hooks respect `skipped` flag
 - **Status**: ✅ Match
 
 ### Tag Stripping
+
 - **Claude Code**: Worker handles `<private>` and `<claude-mem-context>` tags
 - **Cursor**: Worker handles tags (hooks don't need to strip)
 - **Status**: ✅ Match
@@ -161,8 +166,8 @@ This document compares claude-mem's Claude Code hooks with the Cursor hooks impl
 | User Experience | ⚠️ Partial (no SessionStart) |
 
 **Overall**: The Cursor hooks implementation achieves **full functional parity** with claude-mem's Claude Code hooks:
+
 - ✅ Session initialization
 - ✅ Context injection (via auto-updated `.cursor/rules/` file)
 - ✅ Observation capture (MCP tools, shell commands, file edits)
 - ⚠️ Summary generation (works, but no transcript access)
-

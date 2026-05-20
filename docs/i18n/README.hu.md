@@ -116,12 +116,12 @@ Indítsa újra a Claude Code-ot. A korábbi munkamenetek kontextusa automatikusa
 - 🧠 **Tartós memória** - A kontextus túléli a munkameneteket
 - 📊 **Progresszív felfedés** - Többrétegű memória-visszakeresés token költség láthatósággal
 - 🔍 **Skill-alapú keresés** - Lekérdezheti projekt előzményeit a mem-search skill segítségével
-- 🖥️ **Webes megjelenítő felület** - Valós idejű memória stream a http://localhost:37777 címen
+- 🖥️ **Webes megjelenítő felület** - Valós idejű memória stream a <http://localhost:37777> címen
 - 💻 **Claude Desktop Skill** - Memória keresése Claude Desktop beszélgetésekből
 - 🔒 **Adatvédelmi kontroll** - Használja a `<private>` címkéket az érzékeny tartalom kizárásához
 - ⚙️ **Kontextus konfiguráció** - Finomhangolt kontroll afelett, hogy milyen kontextus kerül beillesztésre
 - 🤖 **Automatikus működés** - Nincs szükség manuális beavatkozásra
-- 🔗 **Hivatkozások** - Hivatkozás múltbeli megfigyelésekre ID-kkal (hozzáférés: http://localhost:37777/api/observation/{id} vagy mindegyik megtekintése a webes felületen a http://localhost:37777 címen)
+- 🔗 **Hivatkozások** - Hivatkozás múltbeli megfigyelésekre ID-kkal (hozzáférés: <http://localhost:37777/api/observation/{id}> vagy mindegyik megtekintése a webes felületen a <http://localhost:37777> címen)
 - 🧪 **Béta csatorna** - Kísérleti funkciók, mint az Endless Mode kipróbálása verziócserével
 
 ---
@@ -180,6 +180,7 @@ További részletekért lásd az [Architektúra áttekintést](https://docs.clau
 A Claude-Mem intelligens keresést biztosít a mem-search skillen keresztül, amely automatikusan aktiválódik, amikor múltbeli munkáról kérdez:
 
 **Hogyan működik:**
+
 - Csak kérdezzen természetesen: *"Mit csináltunk az előző munkamenetben?"* vagy *"Javítottuk már ezt a hibát korábban?"*
 - Claude automatikusan meghívja a mem-search skillet a releváns kontextus megtalálásához
 
@@ -212,7 +213,7 @@ Részletes példákért lásd a [Keresési eszközök útmutatót](https://docs.
 
 ## Béta funkciók
 
-A Claude-Mem **béta csatornát** kínál kísérleti funkciókkal, mint az **Endless Mode** (biomimetikus memória architektúra hosszabb munkamenetekhez). Váltson a stabil és béta verziók között a webes megjelenítő felületről a http://localhost:37777 → Settings címen.
+A Claude-Mem **béta csatornát** kínál kísérleti funkciókkal, mint az **Endless Mode** (biomimetikus memória architektúra hosszabb munkamenetekhez). Váltson a stabil és béta verziók között a webes megjelenítő felületről a <http://localhost:37777> → Settings címen.
 
 További részletekért az Endless Mode-ról és annak kipróbálásáról lásd a **[Béta funkciók dokumentációt](https://docs.claude-mem.ai/beta-features)**.
 
@@ -286,7 +287,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Támogatás
 

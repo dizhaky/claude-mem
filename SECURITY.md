@@ -14,7 +14,7 @@ Only the latest released version of `claude-mem` receives security updates. Plea
 If you discover a security vulnerability in claude-mem, please report it by:
 
 1. **DO NOT** create a public GitHub issue, pull request, or discussion
-2. Email **alex@cmem.ai** with details, OR use GitHub's "Report a vulnerability" button under the Security tab to open a private security advisory
+2. Email **<alex@cmem.ai>** with details, OR use GitHub's "Report a vulnerability" button under the Security tab to open a private security advisory
 3. Include steps to reproduce, impact assessment, affected version(s), and suggested fixes if possible
 
 **Scope:** This policy covers the `claude-mem` plugin and its bundled components (hooks, worker service, SQLite/Chroma sync, viewer UI, search/planning skills). Issues in upstream dependencies should be reported to those projects directly, but feel free to flag them to us as well.
@@ -28,11 +28,13 @@ We take security seriously, will acknowledge valid reports within 48 hours, and 
 Claude-mem executes system commands for git operations and process management. We have implemented comprehensive protections against command injection:
 
 #### Safe Command Execution
+
 - **Array-based Arguments:** All commands use array-based arguments to prevent shell interpretation
 - **No Shell Execution:** `shell: false` is explicitly set for all spawn operations involving user input
 - **Input Validation:** All user-controlled parameters are validated before use
 
 #### Example Safe Pattern
+
 ```typescript
 // ✅ SAFE: Array-based arguments with validation
 if (!isValidBranchName(userInput)) {
@@ -70,6 +72,7 @@ Tags are stripped at the hook layer before data reaches worker/database.
 ## Security Audit History
 
 ### 2025-12-16: Command Injection Vulnerability (Issue #354)
+
 - **Severity:** CRITICAL
 - **Status:** RESOLVED
 - **Affected Versions:** All versions prior to fix
@@ -78,6 +81,7 @@ Tags are stripped at the hook layer before data reaches worker/database.
 - **Vulnerabilities Fixed:** 3
 
 **Summary of Fixes:**
+
 1. Replaced string interpolation with array-based arguments in `BranchManager.ts`
 2. Added `isValidBranchName()` validation function
 3. Removed unnecessary shell usage in `bun-path.ts`
@@ -88,6 +92,7 @@ Tags are stripped at the hook layer before data reaches worker/database.
 ### When Adding Command Execution
 
 1. **NEVER use shell with user input:**
+
    ```typescript
    // ❌ NEVER
    execSync(`command ${userInput}`);
@@ -98,6 +103,7 @@ Tags are stripped at the hook layer before data reaches worker/database.
    ```
 
 2. **ALWAYS validate user input:**
+
    ```typescript
    if (!isValidInput(userInput)) {
      throw new Error('Invalid input');
@@ -105,6 +111,7 @@ Tags are stripped at the hook layer before data reaches worker/database.
    ```
 
 3. **Use array-based arguments:**
+
    ```typescript
    // ❌ NEVER
    execSync(`git ${command} ${arg}`);
@@ -114,6 +121,7 @@ Tags are stripped at the hook layer before data reaches worker/database.
    ```
 
 4. **Explicitly set shell: false:**
+
    ```typescript
    spawnSync('command', args, { shell: false });
    ```
@@ -197,7 +205,7 @@ For security-related questions (non-vulnerabilities), please:
 
 1. Review code comments in security-critical files
 2. Open a GitHub Discussion (not an Issue) for general security questions
-3. For sensitive questions, email **alex@cmem.ai**
+3. For sensitive questions, email **<alex@cmem.ai>**
 
 ---
 

@@ -5,6 +5,7 @@
 **Net effect of this fix:** A single, documented canonical resolution rule per integration class; centralized template generators that produce the shell-defensive prelude and the absolute-path bake; build-time guardrails that prevent drift; documentation aligned with the canonical rule; and a validation matrix covering every (IDE × hook event × platform) combination.
 
 **Out of scope:**
+
 - Codex marketplace cache version-mismatch (covered by `plans/2026-05-06-codex-plugin-version-mismatch.md`).
 - Any rework of `bun-runner.js`'s stdin handling (issue #2188 territory — separate concern).
 - Pro-feature endpoints or worker port resolution (uses `CLAUDE_MEM_WORKER_PORT`, not `CLAUDE_PLUGIN_ROOT`; orthogonal).
@@ -54,6 +55,7 @@ These facts came from direct file reads (grep + Read) of the working tree on 202
 ### 0.3 Existing tests covering this scope
 
 `tests/infrastructure/plugin-distribution.test.ts`:
+
 - Lines 110–114: every hook command must contain `CLAUDE_PLUGIN_ROOT`.
 - Lines 116–122: every hook command must contain `$_C/plugins/marketplaces/thedotmack/plugin` fallback (issue #1215).
 - Lines 124–132: cache path must be tried BEFORE marketplace fallback (issue #1533).
@@ -65,6 +67,7 @@ These facts came from direct file reads (grep + Read) of the working tree on 202
 ### 0.4 Existing build-time enforcement
 
 `scripts/build-hooks.js`:
+
 - Lines 392–396: byte-identical sync between `.mcp.json` and `plugin/.mcp.json`.
 - Lines 397–403: MCP launcher must include codex cache and claude cache fallbacks.
 - Lines 361–404: required-distribution-files check.
@@ -84,9 +87,9 @@ These facts came from direct file reads (grep + Read) of the working tree on 202
 
 Before Phase 1 finalizes the canonical rule, deploy a Documentation Discovery subagent to confirm:
 
-1. **Claude Code hook spec.** Does Claude Code documentation say `CLAUDE_PLUGIN_ROOT` is *guaranteed* to be set at hook spawn time? Or only when the hook is loaded from a plugin (vs. a user-level hook)? Source: https://docs.claude.com/claude-code/ — find the hook contract page.
+1. **Claude Code hook spec.** Does Claude Code documentation say `CLAUDE_PLUGIN_ROOT` is *guaranteed* to be set at hook spawn time? Or only when the hook is loaded from a plugin (vs. a user-level hook)? Source: <https://docs.claude.com/claude-code/> — find the hook contract page.
 2. **Codex CLI hook spec.** Same question for Codex CLI 0.128+. The codex-hooks template in this repo defends against the var being missing; confirm whether that's needed or paranoid. Source: codex CLI docs / `codex --help plugin`.
-3. **Cursor hook contract.** Confirm that Cursor invokes hook commands via direct exec (no shell expansion). Today's installer assumes it. Source: https://docs.cursor.com/.
+3. **Cursor hook contract.** Confirm that Cursor invokes hook commands via direct exec (no shell expansion). Today's installer assumes it. Source: <https://docs.cursor.com/>.
 4. **Gemini CLI hook contract.** Same for Gemini.
 5. **Windsurf hook contract.** Same for Windsurf.
 6. **OpenCode plugin contract.** Confirm that OpenCode passes plugin-root information via the `OpenCodePluginContext.directory` field rather than env var. Source: `src/integrations/opencode-plugin/index.ts:11`.
@@ -159,11 +162,13 @@ Both runtime scripts MUST accept `CLAUDE_PLUGIN_ROOT` env first, then fall back 
 ```
 
 **Verification checklist:**
+
 - [ ] `CLAUDE.md` has a `## Spawn-Contract Resolution` section exactly as above.
 - [ ] The section names files (`hooks.json`, `codex-hooks.json`, etc.) and identifiers (`hook-shell-template.ts`, `install-paths.ts`) that Phases 2–3 will create.
 - [ ] No code changes in this phase.
 
 **Anti-pattern guards:**
+
 - ❌ Do not pick option (c) — it adds an extra binary that itself needs install-time path baking, recursing the problem.
 - ❌ Do not write a "unified" rule that tries to handle host-managed and installer-managed sites with the same template. They have different lifecycles.
 
@@ -211,12 +216,14 @@ The function builds a single-line shell string composed of:
    - `mcp`: no PATH prelude (the `sh -c` for MCP servers inherits PATH from the parent — see `.mcp.json:8`).
 
 2. **Config-dir + plugin-root resolution** (identical across hosts):
+
    ```sh
    _C="${CLAUDE_CONFIG_DIR:-$HOME/.claude}";
    _E="${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT:-}}";
    ```
 
 3. **Candidate enumeration + filter loop** (reuse the existing pipeline from `plugin/hooks/hooks.json:24`):
+
    ```sh
    _P=$({
      [ -n "$_E" ] && printf '%s\n' "$_E";
@@ -231,14 +238,17 @@ The function builds a single-line shell string composed of:
    ```
 
 4. **Not-found guard:**
+
    ```sh
    [ -n "$_P" ] || { echo "<notFoundMessage>" >&2; exit 1; };
    ```
 
 5. **Cygpath conversion** (host-specific — `claude-code` and `codex-cli` only, NOT `mcp` because `sh -c` already runs under POSIX shell which understands POSIX paths):
+
    ```sh
    command -v cygpath >/dev/null 2>&1 && { _W=$(cygpath -w "$_P" 2>/dev/null); [ -n "$_W" ] && _P="$_W"; };
    ```
+
    Note: existing `.mcp.json:8` does NOT include cygpath — confirm via test diff that we preserve that.
 
 6. **Extra env exports** (e.g. `CLAUDE_MEM_CODEX_HOOK=1` for codex version-check, see `plugin/hooks/codex-hooks.json:10`).
@@ -275,12 +285,14 @@ Generate the four files from a manifest object. Compare byte-for-byte against ex
 `shell-quote` (`scripts/build-hooks.js:101`, already a plugin runtime dep) provides `quote(words)` to safely escape `node`, `"$_P/scripts/X.cjs"`, `hook`, `claude-code`, `session-init`. Do not hand-build the string — escape via `quote()`.
 
 **Verification checklist:**
+
 - [ ] `src/build/hook-shell-template.ts` exists and TypeScript compiles.
 - [ ] `npm run build-and-sync` regenerates the four files; output is byte-identical to current contents.
 - [ ] `git diff plugin/hooks/hooks.json plugin/hooks/codex-hooks.json .mcp.json plugin/.mcp.json` is empty after the build.
 - [ ] All assertions in `tests/infrastructure/plugin-distribution.test.ts` still pass without modification.
 
 **Anti-pattern guards:**
+
 - ❌ Do not change the existing fallback chain. Order matters (env first, then cache, then marketplace) — issue #1533 regression.
 - ❌ Do not introduce `${VAR}`-substitution at JSON-write time (trying to "pre-render" the placeholder) — the host shell is what expands it; pre-rendering would defeat the whole point.
 - ❌ Do not delete the `cygpath` block on the `mcp` host until you've confirmed `sh -c` on Git-Bash/Cygwin actually passes POSIX paths through to `node` correctly (it does today; document the assumption).
@@ -327,10 +339,12 @@ Each helper must resolve to the *currently installed* version's cache directory,
 These two integrations don't bake shell paths (their plugins run as JS), so they don't consume the new helpers. Out of scope for Phase 3, but **document in `CLAUDE.md` Spawn-Contract Resolution section** that they are exempt by design.
 
 **Verification checklist:**
+
 - [ ] `src/services/integrations/install-paths.ts` exists; all six exports compile.
 - [ ] `grep -rn "findMcpServerPath\|findWorkerServicePath\|findBunPath" src/services/integrations` shows the four installers importing from `install-paths.ts` (re-exports allowed).
 - [ ] `npm test` passes existing installer tests (if any — verify with `grep -rn "from.*CursorHooksInstaller\|from.*WindsurfHooksInstaller\|from.*GeminiCliHooksInstaller\|from.*McpIntegrations" tests/`).
 - [ ] No installer file contains a string literal beginning with `${CLAUDE_PLUGIN_ROOT}` after this phase. Add a test:
+
   ```ts
   it('installers must not emit raw ${CLAUDE_PLUGIN_ROOT} placeholders', () => {
     for (const file of ['CursorHooksInstaller.ts', 'WindsurfHooksInstaller.ts', 'GeminiCliHooksInstaller.ts', 'McpIntegrations.ts']) {
@@ -341,6 +355,7 @@ These two integrations don't bake shell paths (their plugins run as JS), so they
   ```
 
 **Anti-pattern guards:**
+
 - ❌ Do not change the public API of the existing `findMcpServerPath`/`findWorkerServicePath`/`findBunPath` exports during this phase — keep them as thin wrappers. Schedule removal for the release cycle after migration completes.
 - ❌ Do not introduce new env vars (e.g. `CLAUDE_MEM_BUN_PATH`). The existing `findBunPath()` at `CursorHooksInstaller.ts:112–130` already handles platform variation; preserve that logic.
 
@@ -383,16 +398,19 @@ The docs (`docs/public/hooks-architecture.mdx:100,176,223,283,337,604,754`, plus
 This is the canonical Claude Code documented form per upstream. **Keep the docs aligned with upstream** — do NOT replace these examples with the defensive shell prelude (which is claude-mem-internal complexity, not user-facing API).
 
 Add a single subsection to `docs/public/hooks-architecture.mdx` titled "Why claude-mem's own hooks look different" that:
+
 1. States the upstream contract: `${CLAUDE_PLUGIN_ROOT}` is set by the host.
 2. Explains that claude-mem ships a defensive fallback because some host versions / cache rotations don't inject it.
 3. Links to this plan and `plans/2026-05-06-codex-plugin-version-mismatch.md`.
 
 **Verification checklist:**
+
 - [ ] All Phase 0.1 catalogue rows #1–17 are addressed (action documented and, where applicable, code refactored).
 - [ ] `git grep -n '\${CLAUDE_PLUGIN_ROOT}' -- ':(exclude)docs' ':(exclude)plugin/hooks' ':(exclude)*.mcp.json' ':(exclude)plans'` returns no hits — the only places that should mention raw `${CLAUDE_PLUGIN_ROOT}` are the host-managed shell-template files (Rule A) and user-facing docs.
 - [ ] `npm test` passes.
 
 **Anti-pattern guards:**
+
 - ❌ Do not delete `bun-runner.js`'s `fixBrokenScriptPath` until Phase 5 enforces no remaining call site can leak `/scripts/...`. The band-aid is load-bearing for sites we don't own (third-party hooks copy-pasted from docs).
 - ❌ Do not "improve" docs by replacing `${CLAUDE_PLUGIN_ROOT}` with shell preludes — users would copy-paste shell complexity into single-purpose hooks that don't need it.
 
@@ -452,12 +470,14 @@ Add a `lint:docs` script that fails CI if `docs/public/**/*.mdx` mentions `${CLA
 ```
 
 **Verification checklist:**
+
 - [ ] Hand-editing any Rule A file and running `npm run build-and-sync` produces a clear error telling the user to use the generator.
 - [ ] All new tests in `tests/infrastructure/plugin-distribution.test.ts` pass.
 - [ ] `lint:docs` CI step runs and passes against current `docs/public/`.
 - [ ] Removing `fixBrokenScriptPath` from `bun-runner.js` causes the build to fail (at the doc-comment assertion).
 
 **Anti-pattern guards:**
+
 - ❌ Do not assert exact byte equality between the four Rule A files in tests — they have different `host` values (different PATH preludes), so they should NOT be byte-equal. Only the MCP pair (`.mcp.json` ↔ `plugin/.mcp.json`) is required to be byte-equal.
 - ❌ Do not auto-regenerate Rule A files in CI without a check — accidental regenerations could mask drift bugs.
 
@@ -493,15 +513,18 @@ All Rule B integrations are bake-and-overwrite by design — running the install
 ### 6.4 Documentation note for Codex self-hosted marketplaces
 
 Cross-reference `plans/2026-05-06-codex-plugin-version-mismatch.md`: self-hosted Codex marketplaces need to re-add the marketplace post-claude-mem-upgrade because Codex 0.128 doesn't auto-upgrade enabled plugin caches. Add this note to:
+
 - `docs/public/configuration.mdx` (Codex section if any)
 - The "Spawn-Contract Resolution" section in `CLAUDE.md` (Phase 1) under a "Known limitations" subsection
 
 **Verification checklist:**
+
 - [ ] Re-running `npx claude-mem install` on a system with v(N-1) baked paths refreshes them to v(N) without user intervention.
 - [ ] The "stale paths re-baked" log line appears once per Rule B integration that needed it, never on a fresh install.
 - [ ] Codex self-hosted marketplace doc note is present.
 
 **Anti-pattern guards:**
+
 - ❌ Do not silently delete pre-existing user customizations in `~/.cursor/hooks.json` or `~/.gemini/settings.json`. Only overwrite the `claude-mem`-namespaced entries; preserve everything else (the existing installers already do this — verify it).
 - ❌ Do not introduce a separate "migrate" CLI command. Keep migration implicit in `npx claude-mem install`.
 
@@ -565,6 +588,7 @@ For Windows-cygpath, mock `cygpath` as a shell function returning a Windows-styl
 ### 7.3 Concrete test cases (Rule B)
 
 Add per-installer integration tests that:
+
 1. Run the installer against a tmp config directory (override env vars: `CURSOR_CONFIG_DIR`, `WINDSURF_HOOKS_DIR` overrides, etc. — most installers in this repo use `homedir()` directly; tests will need to mock or run in a Docker container).
 2. Read the resulting JSON config.
 3. Assert no string in the config contains `${CLAUDE_PLUGIN_ROOT}` literally.
@@ -575,6 +599,7 @@ Add per-installer integration tests that:
 ### 7.4 Documented manual verification on real IDEs
 
 For each of the 12 IDEs, run `npx claude-mem install`, then start a session and verify:
+
 - Claude Code: SessionStart hook fires; check via `~/.claude-mem/logs/`.
 - Codex CLI: SessionStart hook fires; check via `~/.codex/logs/`.
 - Cursor: `claude-mem` MCP server appears in MCP panel; one tool call succeeds.
@@ -587,12 +612,14 @@ For each of the 12 IDEs, run `npx claude-mem install`, then start a session and 
 Document the manual results in the PR description.
 
 **Verification checklist:**
+
 - [ ] All Rule A shell-eval tests pass on Linux and macOS in CI.
 - [ ] Windows shell-eval tests pass on Windows-WSL CI runner (or are explicitly marked skipped with a reason).
 - [ ] All Rule B installer tests pass.
 - [ ] Manual verification table is filled in for the PR.
 
 **Anti-pattern guards:**
+
 - ❌ Do not skip the "fails cleanly when no candidate exists" test. The "claude-mem: ... not found" error is what users see when their install is broken; it's a contract.
 - ❌ Do not run Rule A shell tests with `set -u` or `set -e` — the canonical prelude relies on unset-with-default semantics; strict mode would change behavior.
 
@@ -622,12 +649,14 @@ After merge, confirm:
 - `plans/02-spawn-contract-templating.md` (this file) is referenced from `plans/2026-05-06-codex-plugin-version-mismatch.md` as the canonical resolution document.
 
 **Verification checklist:**
+
 - [ ] PR merges cleanly.
 - [ ] Version bump publishes a new marketplace.
 - [ ] No user-reported "not found" issues in the 48 hours after release.
 - [ ] All three documentation deliverables are in place.
 
 **Anti-pattern guards:**
+
 - ❌ Do not bypass version-bump (per CLAUDE.md "No need to edit the changelog ever, it's generated automatically.").
 - ❌ Do not skip the manual 4-IDE verification step. The whole point of this PR is cross-IDE consistency; type checks alone won't catch a regression.
 

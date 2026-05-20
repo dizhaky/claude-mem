@@ -3,6 +3,7 @@
 > **Goal:** Stop host-side environment variables from contaminating the worker's Anthropic SDK subprocess. Two confirmed bugs anchor this plan: `ANTHROPIC_BASE_URL` leaks from the parent shell while `ANTHROPIC_AUTH_TOKEN` is blocked, breaking proxy/gateway auth (#2375); and `CLAUDE_CODE_EFFORT_LEVEL` propagates from host CLI settings into the SDK subprocess where it triggers a permanent HTTP 400 that the retry classifier mistakes for transient (#2357). Adjacent feature #2289 (`$TIER` alias syntax) is in scope where it shares the same env/model-resolution surface.
 >
 > **Net effect:**
+>
 > - The OAuth-skip predicate requires a real credential (`ANTHROPIC_API_KEY` or `ANTHROPIC_AUTH_TOKEN`), not a bare `ANTHROPIC_BASE_URL`. Proxy/gateway users put credentials in `~/.claude-mem/.env`; nothing relies on parent-shell leaks.
 > - `BLOCKED_ENV_VARS` adds `ANTHROPIC_BASE_URL` and the `CLAUDE_CODE_EFFORT_LEVEL` / `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT` pair (defense in depth alongside the existing `env-sanitizer.ts` `CLAUDE_CODE_*` prefix filter).
 > - The Claude provider's error classifier explicitly handles HTTP 400 as `unrecoverable`, matching `GeminiProvider`/`OpenRouterProvider`. No more unbounded retry loop on permanent-error responses.
@@ -10,6 +11,7 @@
 > - `~/.claude-mem/.env` becomes the single source of truth for non-OAuth Anthropic credentials. The loader's whitelist documents this contract.
 >
 > **Out of scope:**
+>
 > - Hook-side env handling (Plan 01 / 02 territory).
 > - Worker daemon lifecycle, DB bloat, and chroma-mcp leaks (Plan 03).
 > - Observer/Knowledge SDK tool enforcement (Plan 05).
@@ -178,6 +180,7 @@ Use `bun:test` per `package.json` `"test": "bun test"`. Pattern from `tests/clau
 ### 2.1 Edit `src/shared/EnvManager.ts:14–24` — extend `BLOCKED_ENV_VARS`
 
 **Before:**
+
 ```ts
 const BLOCKED_ENV_VARS = [
   'ANTHROPIC_API_KEY',
@@ -188,6 +191,7 @@ const BLOCKED_ENV_VARS = [
 ```
 
 **After (add `ANTHROPIC_BASE_URL`):**
+
 ```ts
 const BLOCKED_ENV_VARS = [
   'ANTHROPIC_API_KEY',       // #733
@@ -201,6 +205,7 @@ const BLOCKED_ENV_VARS = [
 ### 2.2 Edit `src/shared/EnvManager.ts:237–244` — restrict OAuth-skip to real credentials
 
 **Before:**
+
 ```ts
 if (
   isolatedEnv.ANTHROPIC_API_KEY ||
@@ -213,6 +218,7 @@ if (
 ```
 
 **After:**
+
 ```ts
 // Skip OAuth lookup ONLY when a real credential is configured. A bare
 // ANTHROPIC_BASE_URL is not a credential — every documented gateway needs
@@ -343,6 +349,7 @@ Wire this classifier into the existing `try { ... } catch` around `query(...)` i
 ### 3.3 Confirm `src/supervisor/env-sanitizer.ts` already strips `CLAUDE_CODE_EFFORT_LEVEL`
 
 Read lines 1–51. Verify:
+
 - `ENV_PREFIXES` includes `'CLAUDE_CODE_'`.
 - `ENV_PRESERVE` does NOT include `CLAUDE_CODE_EFFORT_LEVEL`, `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT`.
 
@@ -360,10 +367,12 @@ No code change to behavior here.
 - [ ] Tests 5, 6, 7 from Phase 1 now GREEN.
 - [ ] `grep -n "CLAUDE_CODE_EFFORT_LEVEL" src/` returns hits in `EnvManager.ts` (BLOCKED_ENV_VARS) and the test file. Nothing else.
 - [ ] Reproduce #2357 scenario locally:
+
   ```bash
   CLAUDE_CODE_EFFORT_LEVEL=MAX bun run src/services/worker-service.ts --daemon
   # Observe: no `effort` parameter on outgoing requests.
   ```
+
 - [ ] If a 400 is forced (e.g., via a mocked SDK reject), the retry loop terminates after the first attempt; `logger.warn` fires once.
 
 ### 3.5 Anti-pattern guards
@@ -468,10 +477,10 @@ For the worker-daemon and downstream MCP/chroma spawns, parent-process env IS th
 
 ### 5.2 Add audit test — `tests/env-isolation.test.ts`
 
-8. **`every documented spawn site applies sanitizeEnv`**
+1. **`every documented spawn site applies sanitizeEnv`**
    - Read each file from the audit table.
    - Assert: each line cited contains `sanitizeEnv(`. Currently GREEN; test prevents regression.
-9. **`worker-daemon spawn env does not contain CLAUDE_CODE_EFFORT_LEVEL`**
+2. **`worker-daemon spawn env does not contain CLAUDE_CODE_EFFORT_LEVEL`**
    - Stub `process.env.CLAUDE_CODE_EFFORT_LEVEL = 'MAX'`.
    - Construct the env block as ProcessManager.ts:415 does.
    - Assert: result does not contain `CLAUDE_CODE_EFFORT_LEVEL`. Currently GREEN.

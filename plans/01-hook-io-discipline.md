@@ -3,6 +3,7 @@
 **Goal:** Establish a single, typed IO discipline across claude-mem's 6 lifecycle hooks (Setup, SessionStart, UserPromptSubmit, PreToolUse:Read, PostToolUse, Stop). Every emit point must declare an *intent* (DIAGNOSTIC, MODEL_CONTEXT, USER_HINT, BLOCKING_FEEDBACK, EXIT_SIGNAL) and route through a wrapper module that maps intent → channel correctly. Fix issue #2292 (recordWorkerUnreachable diagnostic silently swallowed) along the way.
 
 **Net effect:**
+
 - `process.stderr.write` is no longer monkey-patched at the boundary. Diagnostic stderr (logger, fail-loud counter, bun-runner #2188) reaches the user as the hook contract intends.
 - Handlers become *pure*: they return a `HookResult` and never touch process streams directly.
 - A single `src/cli/hook-io.ts` module is the only place that calls `console.log`, `process.stderr.write`, and `process.exit` for the hook execution path. `hookCommand` orchestrates that module.
@@ -11,6 +12,7 @@
 - A grep-based CI check forbids direct stream writes in `src/cli/handlers/**` and `src/cli/adapters/**`.
 
 **Out of scope:**
+
 - Logger redesign (the existing `src/utils/logger.ts` keeps its API; only its stderr fallback path changes call site).
 - Worker-side HTTP API responses (this plan is *only* about the hook execution edge).
 - bun-runner.js stdin handling (issue #2188 diagnostic stays — only its emit channel is reviewed).
@@ -75,6 +77,7 @@ The orchestrator did the discovery during planning; subsequent phases cite by li
 **What to implement:** A complete table of every `process.stderr.write`, `process.stdout.write`, `console.log`, `console.error`, `console.warn`, `process.exit`, and `throw` reachable from a hook execution. The audit is the deliverable; no code changes in this phase. The table goes into the PR description (and is summarized below).
 
 **Files to grep:**
+
 ```
 src/cli/hook-command.ts
 src/cli/handlers/*.ts
@@ -95,6 +98,7 @@ plugin/hooks/hooks.json                   # the bash dispatchers' echo + exit 1
 |---|---|---|---|---|---|
 
 **Intent vocabulary** (use these exact tokens):
+
 - `DIAGNOSTIC` — operator-visible logs, never reaches the model. Stderr.
 - `MODEL_CONTEXT` — content the assistant should consume. Stdout JSON only.
 - `USER_HINT` — short advisory shown to the human user (e.g. "OAuth token stale"). Stderr OR `systemMessage` field, NEVER mixed with model context.
@@ -137,11 +141,13 @@ plugin/hooks/hooks.json                   # the bash dispatchers' echo + exit 1
 | `plugin/hooks/hooks.json` SessionStart line 24 | `echo '{"continue":true,"suppressOutput":true}'` | MODEL_CONTEXT | stdout | model | ok |
 
 **Verification checklist:**
+
 - [ ] Re-run each grep listed above and confirm row count matches the audit table
 - [ ] For every row marked "gap", Phase 2/3/4 has a concrete edit
 - [ ] Audit table is committed to the PR description (or as `plans/01-hook-io-discipline-audit.md`)
 
 **Anti-pattern guards:**
+
 - Do not skip rows because they're in third-party code paths — if they're imported by a handler, they're in scope.
 - Do not collapse rows with "(misc logger calls)". Each `logger.warn`/`logger.error` inside a handler is one row, because the swallow affects each one.
 - Do not extend the audit to non-hook code paths (e.g. `npx-cli/`, `transcripts/`, `viewer/`). Out of scope.
@@ -200,11 +206,13 @@ Add a comment block immediately above the new `installHookStderrBuffer()` call i
 ```
 
 **Verification checklist:**
+
 - [ ] `grep -n "process.stderr.write = " src/cli/hook-command.ts` returns no direct assignment (the no-op replacement is gone)
 - [ ] `installHookStderrBuffer` is the ONLY symbol that mutates `process.stderr.write` in `src/`
 - [ ] Manual: invoke a hook with `CLAUDE_MEM_HOOK_FAIL_LOUD_THRESHOLD=1`, kill the worker, observe the "claude-mem worker unreachable" message on stderr (it was previously swallowed)
 
 **Anti-pattern guards:**
+
 - Do not flush the buffer on every handler call. Buffering is the whole point — flush only when claude-mem code explicitly chooses to surface.
 - Do not move the buffer install into `executeHookPipeline` — it must wrap the catch block too.
 - Do not export the buffer controller from `hook-io.ts` for handler use. Handlers don't need it; they use `emitDiagnostic` instead.
@@ -312,12 +320,14 @@ The `process.exit(...)` calls become `emitter.exitGraceful(options)` and `emitte
 The `logger.error('HOOK', …)` at line 108 stays — it routes through `emitDiagnostic` because the logger's stderr fallback (Phase 4 edit to `logger.ts`) does so.
 
 **Verification checklist:**
+
 - [ ] `src/cli/hook-io.ts` exports the API surface verbatim (names match Phase 4 imports)
 - [ ] `grep -n "console.log\|console.error\|process.stderr.write\|process.exit" src/cli/hook-command.ts` returns ONLY commented-out historical references and the `skipExit` option propagation
 - [ ] `tsc --noEmit` clean
 - [ ] `emitModelContext` test: call twice → throws
 
 **Anti-pattern guards:**
+
 - Do not export `installHookStderrBuffer` from the package's top-level barrel. It's an internal-to-cli helper.
 - Do not add a `emitUserHint` that writes to stderr — that path is now `withUserHint` + adapter routing. Direct stderr USER_HINT bypasses platform shape contracts.
 - Do not let `emitDiagnostic` accept structured data (`{key: value}`) — it takes a string. Keep `logger.*` as the structured-logging path; `emitDiagnostic` is the raw stderr escape hatch.
@@ -335,6 +345,7 @@ Currently lines 27–33 do `process.stderr.write("…Claude-Mem Context Loaded�
 **Replace with:** Build the banner string, return it via `systemMessage` on the HookResult. The `formatOutput` of the claude-code adapter already maps `systemMessage` to the platform JSON shape (see `src/cli/adapters/claude-code.ts:31–33,37–39`).
 
 Specifically:
+
 - Drop lines 27–33 entirely.
 - Build the same string as `bannerText`.
 - Return `{ exitCode: HOOK_EXIT_CODES.SUCCESS, systemMessage: bannerText }`.
@@ -361,6 +372,7 @@ For each, add the same IO-discipline docstring as 4B. Audit confirms these handl
 ### Edit 4D — `src/cli/adapters/*.ts` (confirm formatOutput shape)
 
 Audit each adapter's `formatOutput` and confirm:
+
 1. Returns a plain object (not a promise, not a string).
 2. Every field corresponds to a documented Claude Code / Codex / Cursor / Gemini hook output field.
 3. Does not call `console.*` or `process.*`.
@@ -370,6 +382,7 @@ This is a CONFIRM-ONLY pass. The adapters are clean today; the goal is to lock t
 ### Edit 4E — `src/shared/worker-utils.ts:401–417` (recordWorkerUnreachable)
 
 Current behavior:
+
 - Increments persistent counter.
 - If counter ≥ threshold: writes `'claude-mem worker unreachable for N consecutive hooks.\n'` to stderr, then `process.exit(BLOCKING_ERROR)`.
 
@@ -411,6 +424,7 @@ Same dependency-direction caveat as 4E. If `src/utils/` → `src/cli/` is forbid
 ### Edit 4G — `src/services/worker-service.ts:846–864` (case 'hook')
 
 Confirm-only edit. The `case 'hook':` arm currently does:
+
 - `console.error('Usage: …')` + `process.exit(1)` — ok, this is CLI usage feedback, not a hook execution path.
 - `logger.warn` if worker fails to start — ok.
 - `await hookCommand(platform, event)` — ok; hookCommand owns its own IO from here.
@@ -465,6 +479,7 @@ Confirm-only. The `echo "claude-mem: … not found" >&2; exit 1` pattern in each
 This is the only legitimate `exit 1` in the hook execution path. Document the rationale in CLAUDE.md (Phase 6).
 
 **Verification checklist:**
+
 - [ ] `grep -n "process.stderr.write\|console\\.error\|console\\.log" src/cli/handlers/` returns ONLY logger calls (none)
 - [ ] `grep -n "process.stderr.write\|console\\.error\|console\\.log" src/cli/adapters/` returns nothing
 - [ ] `recordWorkerUnreachable` calls `emitBlockingError` — `grep -n "emitBlockingError" src/shared/worker-utils.ts` returns 1+ hits
@@ -473,6 +488,7 @@ This is the only legitimate `exit 1` in the hook execution path. Document the ra
 - [ ] `npm run build-and-sync` succeeds
 
 **Anti-pattern guards:**
+
 - Do not introduce `process.stdout.write` anywhere. Stay with `console.log` (which `emitModelContext` uses internally).
 - Do not change `bun-runner.js` exit codes — the `exit 0` semantics are load-bearing for Windows Terminal.
 - Do not "tidy" `version-check.js` by collapsing the dual-channel emit. The Codex/Claude Code split is intentional.
@@ -583,6 +599,7 @@ The decision point from the spec ("worker unreachable at fail-loud threshold —
 Spin up `createHookEmitter`, call `emitModelContext` twice, assert it throws. Already covered by 5A test 7; only add as a fuzz harness if the implementer wants more confidence around the global-state-vs-factory choice.
 
 **Verification checklist:**
+
 - [ ] `tests/hook-io.test.ts` exists; all 12 unit tests pass
 - [ ] `tests/hook-stream-discipline.test.ts` exists; all 18 + 5 = 23 integration tests pass
 - [ ] The #2292 regression test (scenario c) FAILS on a checkout of `main` (audit baseline) and PASSES on this branch
@@ -590,6 +607,7 @@ Spin up `createHookEmitter`, call `emitModelContext` twice, assert it throws. Al
 - [ ] `npm test` is green
 
 **Anti-pattern guards:**
+
 - Do not test `process.exit` calls by mocking `process.exit` — use `skipExit: true` option on `emitBlockingError`/`exitGraceful` and assert return values.
 - Do not skip platform variants (`codex`, `cursor`, `gemini-cli`). Stream separation must hold for all adapters; codex's JSON-on-stdout for upgrade hints is a known dual-channel pattern.
 - Do not test handler internals (worker calls, DB writes) in `hook-stream-discipline.test.ts`. Stream contract only.
@@ -636,6 +654,7 @@ The Phase 2 stderr buffer (installed by `installHookStderrBuffer`) captures unso
 New file: `docs/architecture/hook-author-guide.md` (or co-locate in `docs/public/hooks-architecture.mdx` if that file exists — discovery showed it does, per the prior installer-streamline plan).
 
 Cover:
+
 1. The 6 lifecycle hooks and what each is for.
 2. The intent vocabulary (DIAGNOSTIC, MODEL_CONTEXT, USER_HINT, BLOCKING_FEEDBACK, EXIT_SIGNAL).
 3. The `hook-io.ts` API with examples.
@@ -648,6 +667,7 @@ Cover:
 New file: `scripts/check-hook-io-discipline.cjs`
 
 Logic:
+
 1. Walk `src/cli/handlers/**/*.ts` and `src/cli/adapters/**/*.ts`.
 2. For each file, fail if any of these patterns appear (outside of comments):
    - `process.stderr.write`
@@ -670,6 +690,7 @@ Wire into `package.json` as `npm run lint:hook-io` and into the CI pipeline (or 
 If `README.md` mentions hook authoring or has a "for contributors" section, link to the new author guide. Otherwise no edit.
 
 **Verification checklist:**
+
 - [ ] `node scripts/check-hook-io-discipline.cjs` exits 0 on this branch
 - [ ] `node scripts/check-hook-io-discipline.cjs` exits non-zero if you intentionally add `console.error('test')` to `src/cli/handlers/observation.ts`
 - [ ] `CLAUDE.md`'s Exit Code Strategy section reflects the new helper functions
@@ -678,6 +699,7 @@ If `README.md` mentions hook authoring or has a "for contributors" section, link
 - [ ] CI pipeline runs the new lint check (visible in PR checks)
 
 **Anti-pattern guards:**
+
 - Do not allowlist individual handlers or adapters. The whole point is the rule has no exceptions for those directories.
 - Do not write the lint check in TypeScript — it should run before any compile step. Pure CJS or pure JS via `node` directly.
 - Do not edit CHANGELOG.md (per CLAUDE.md).
@@ -702,6 +724,7 @@ npm test
 ```
 
 Expected outcomes:
+
 - All 12 hook-io.test.ts unit tests pass.
 - All 23 hook-stream-discipline.test.ts integration tests pass.
 - All pre-existing tests still pass.
@@ -739,6 +762,7 @@ Expected outcomes:
 Per the standard PR creation flow. Don't auto-merge; this is a cross-cutting refactor that benefits from a review loop.
 
 **Verification checklist:**
+
 - [ ] `npm run build-and-sync` exits 0
 - [ ] `npm test` exits 0
 - [ ] `npm run lint:hook-io` exits 0
@@ -746,6 +770,7 @@ Per the standard PR creation flow. Don't auto-merge; this is a cross-cutting ref
 - [ ] PR description includes the Phase 1 audit table
 
 **Anti-pattern guards:**
+
 - Do not skip the manual #2292 regression check. The whole point of this PR is that the diagnostic surfaces.
 - Do not bump the version — version-bump skill handles that separately.
 - Do not merge without confirming Windows behavior (or noting in the PR that Windows verification is deferred to a Windows reviewer).

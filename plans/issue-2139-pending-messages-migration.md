@@ -18,6 +18,7 @@ Mirror `MigrationRunner.rebuildPendingMessagesForSelfHealingClaim` into `Session
 We do **not** need a new schema_versions number. The existing migration is v28; we just need SessionStore to apply it. The mirror should be **column-existence driven** (not version-trust driven) per the SessionStore convention at line 952: *"Cannot trust schema_versions alone — the old MigrationRunner may have recorded version 26 without the ALTER TABLE actually succeeding. Always check column existence directly."* This matters because real-world affected DBs already have v29 recorded (per the issue) — checking version alone would skip the fix.
 
 We should use the **simple `ALTER TABLE` approach** the issue suggests rather than the full table-rebuild from runner.ts, because:
+
 - ALTER TABLE is safe to run on DBs that already reached v29 with rows present.
 - The runner.ts rebuild's only extra work was dropping a legacy stale-reset epoch column that hasn't existed since v20 in DBs created by the SessionStore path.
 - Idempotency is achieved by `PRAGMA table_info` + column-name guards.
@@ -25,6 +26,7 @@ We should use the **simple `ALTER TABLE` approach** the issue suggests rather th
 ## Phase 0: Documentation Discovery (already done inline above)
 
 Sources consulted:
+
 - `src/services/sqlite/SessionStore.ts:30-77` (constructor migration list)
 - `src/services/sqlite/SessionStore.ts:949-1100` (existing mirror methods + docstrings)
 - `src/services/sqlite/migrations/runner.ts:22-43` (canonical migration order)
@@ -35,6 +37,7 @@ Sources consulted:
 - `plugin/scripts/worker-service.cjs` — confirmed bundled artifact has `.run(27,` and `.run(29,` but no `.run(28,` and no `rebuildPendingMessagesForSelfHealingClaim` symbol.
 
 Allowed APIs (verified to exist):
+
 - `this.db.query('PRAGMA table_info(pending_messages)').all() as TableColumnInfo[]` — used at SessionStore.ts:1024.
 - `this.db.run('ALTER TABLE pending_messages ADD COLUMN <col> <type>')` — used at SessionStore.ts:1029, 1032.
 - `this.db.run('CREATE INDEX IF NOT EXISTS …')` — used throughout.
@@ -43,6 +46,7 @@ Allowed APIs (verified to exist):
 - `TableColumnInfo` is already imported at SessionStore.ts top.
 
 Anti-patterns to avoid:
+
 - Do NOT trust `schema_versions.version = 28` alone — check `PRAGMA table_info` for column existence first (real-world DBs from issue #2139 already have v29 recorded with no v28 logic ever applied).
 - Do NOT do a full table rebuild in SessionStore — risky on populated DBs and unnecessary; use ALTER TABLE.
 - Do NOT add a new version number (e.g. v30). The migration is v28 — we are completing what was already specified, not creating new schema.
@@ -137,6 +141,7 @@ private addPendingMessagesToolUseIdAndWorkerPidColumns(): void {
 ```
 
 `TableNameRow` is not currently imported in SessionStore.ts. **Check the existing imports**; if absent, either:
+
 - Add `TableNameRow` to the existing `import { TableColumnInfo, … } from '../../types/database.js';` line, or
 - Inline the cast as `as Array<{ name: string }>` (matches the inline pattern used elsewhere in the file).
 
@@ -178,13 +183,16 @@ grep -on ".run(2[7-9]," plugin/scripts/worker-service.cjs
 ## Phase 3: End-to-end verification on a real worker
 
 1. Move the existing DB aside to simulate a fresh install:
+
    ```bash
    mv ~/.claude-mem/claude-mem.db ~/.claude-mem/claude-mem.db.preissue2139
    mv ~/.claude-mem/claude-mem.db-wal ~/.claude-mem/claude-mem.db-wal.preissue2139 2>/dev/null
    mv ~/.claude-mem/claude-mem.db-shm ~/.claude-mem/claude-mem.db-shm.preissue2139 2>/dev/null
    ```
+
 2. Restart the worker (kill PID from `~/.claude-mem/supervisor.json`; the supervisor respawns it).
 3. Confirm the schema:
+
    ```bash
    sqlite3 ~/.claude-mem/claude-mem.db "PRAGMA table_info(pending_messages);" | grep -E 'tool_use_id|worker_pid'
    # Both rows must appear.
@@ -193,10 +201,12 @@ grep -on ".run(2[7-9]," plugin/scripts/worker-service.cjs
    sqlite3 ~/.claude-mem/claude-mem.db ".indexes pending_messages" | grep -E 'worker_pid|session_tool'
    # idx_pending_messages_worker_pid and ux_pending_session_tool must appear.
    ```
+
 4. Run a tool call in Claude Code so PostToolUse fires.
 5. `tail -n 200 ~/.claude-mem/logs/<latest>.log | grep -E 'no such column|has no column'` — must be empty.
 6. `sqlite3 ~/.claude-mem/claude-mem.db "SELECT COUNT(*) FROM observations;"` — must be > 0 after a real session.
 7. Restore the original DB so the test isn't destructive:
+
    ```bash
    mv ~/.claude-mem/claude-mem.db.preissue2139 ~/.claude-mem/claude-mem.db
    # (and the -wal/-shm if they existed)
@@ -208,6 +218,7 @@ The user's reported scenario (v29 already applied, columns missing) must also se
 
 1. Copy the current dev DB to a scratch path.
 2. Force the broken state:
+
    ```bash
    cp ~/.claude-mem/claude-mem.db /tmp/issue2139-test.db
    sqlite3 /tmp/issue2139-test.db "
@@ -220,6 +231,7 @@ The user's reported scenario (v29 already applied, columns missing) must also se
    # If DROP COLUMN errors on an older sqlite3 build, simulate via a fresh DB
    # at a 12.4.4-equivalent state instead.
    ```
+
 3. Point a one-off SessionStore at it (a tiny `bun run` script invoking `new SessionStore('/tmp/issue2139-test.db')`).
 4. Re-run `PRAGMA table_info(pending_messages)` — both columns must be present, and `schema_versions` must contain `28`.
 

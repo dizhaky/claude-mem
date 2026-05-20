@@ -68,7 +68,7 @@ This directory is licensed under the **Apache License 2.0**.
 
 See [LICENSE](./LICENSE) for full terms.
 
-### What this means:
+### What this means
 
 - You can use ragtime for personal, research, and commercial purposes
 - You can modify and distribute it

@@ -64,6 +64,7 @@ curl -s "http://localhost:${WORKER_PORT}/api/context/inject?project=PROJECT_NAME
 This returns the entire compressed timeline -- every observation, session boundary, and summary across the project's full history. The response is pre-formatted markdown optimized for LLM consumption.
 
 **Token estimates:** The full timeline size depends on the project's history:
+
 - Small project (< 1,000 observations): ~20-50K tokens
 - Medium project (1,000-10,000 observations): ~50-300K tokens
 - Large project (10,000-35,000 observations): ~300-750K tokens
@@ -145,14 +146,14 @@ Write a comprehensive narrative report titled "Journey Into [PROJECT_NAME]" that
    SELECT COUNT(*) FROM observations WHERE project = 'PROJECT_NAME' AND (source_tool LIKE '%search%' OR source_tool LIKE '%timeline%' OR source_tool LIKE '%get_observations%' OR narrative LIKE '%recalled%' OR narrative LIKE '%from memory%' OR narrative LIKE '%previous session%');
    ```
 
-9. **Timeline Statistics** -- Quantitative summary:
+1. **Timeline Statistics** -- Quantitative summary:
    - Date range (first observation to last)
    - Total observations and sessions
    - Breakdown by observation type (features, bug fixes, discoveries, decisions, changes)
    - Most active days/weeks
    - Longest debugging sessions
 
-10. **Lessons and Meta-Observations** -- What patterns emerge from the full history? What would a new developer learn about this codebase from reading the timeline? What recurring themes or principles guided development?
+2. **Lessons and Meta-Observations** -- What patterns emerge from the full history? What would a new developer learn about this codebase from reading the timeline? What recurring themes or principles guided development?
 
 ## Writing Style
 
@@ -173,6 +174,7 @@ Write a comprehensive narrative report titled "Journey Into [PROJECT_NAME]" that
 Here is the complete project timeline:
 
 [TIMELINE CONTENT GOES HERE]
+
 ```
 
 ### Step 5: Save the Report
@@ -180,7 +182,9 @@ Here is the complete project timeline:
 Save the agent's output as a markdown file. Default location:
 
 ```
+
 ./journey-into-PROJECT_NAME.md
+
 ```
 
 Or if the user specified a different output path, use that instead.

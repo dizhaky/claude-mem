@@ -244,11 +244,14 @@
 1. **Add settings keys** to `src/shared/SettingsDefaultsManager.ts`:
 
    - Interface (around lines 6–67): add
+
      ```ts
      CLAUDE_MEM_OBSERVER_MAX_TOKENS_PER_INVOCATION: string;
      CLAUDE_MEM_OBSERVER_MAX_TOKENS_PER_SESSION: string;
      ```
+
    - DEFAULTS (around lines 70–131): add
+
      ```ts
      CLAUDE_MEM_OBSERVER_MAX_TOKENS_PER_INVOCATION: '50000',
      CLAUDE_MEM_OBSERVER_MAX_TOKENS_PER_SESSION: '500000',

@@ -116,12 +116,12 @@ Genstart Claude Code. Kontekst fra tidligere sessioner vil automatisk vises i ny
 - 🧠 **Vedvarende Hukommelse** - Kontekst overlever på tværs af sessioner
 - 📊 **Progressiv Afsløring** - Lagdelt hukommelseshentning med synlighed af token-omkostninger
 - 🔍 **Færdighedsbaseret Søgning** - Forespørg din projekthistorik med mem-search-færdighed
-- 🖥️ **Web Viewer UI** - Realtids hukommelsesstream på http://localhost:37777
+- 🖥️ **Web Viewer UI** - Realtids hukommelsesstream på <http://localhost:37777>
 - 💻 **Claude Desktop-færdighed** - Søg i hukommelsen fra Claude Desktop-samtaler
 - 🔒 **Privatkontrol** - Brug `<private>`-tags til at ekskludere følsomt indhold fra lagring
 - ⚙️ **Kontekstkonfiguration** - Finjusteret kontrol over hvilken kontekst der indsprøjtes
 - 🤖 **Automatisk Drift** - Ingen manuel indgriben påkrævet
-- 🔗 **Citationer** - Henvisning til tidligere observationer med ID'er (tilgås via http://localhost:37777/api/observation/{id} eller se alle i web viewer på http://localhost:37777)
+- 🔗 **Citationer** - Henvisning til tidligere observationer med ID'er (tilgås via <http://localhost:37777/api/observation/{id}> eller se alle i web viewer på <http://localhost:37777>)
 - 🧪 **Beta-kanal** - Prøv eksperimentelle funktioner som Endless Mode via versionsskift
 
 ---
@@ -180,6 +180,7 @@ Se [Arkitekturoversigt](https://docs.claude-mem.ai/architecture/overview) for de
 Claude-Mem leverer intelligent søgning gennem mem-search-færdigheden, der automatisk aktiveres, når du spørger om tidligere arbejde:
 
 **Sådan Virker Det:**
+
 - Spørg bare naturligt: *"Hvad lavede vi sidste session?"* eller *"Har vi løst denne fejl før?"*
 - Claude aktiverer automatisk mem-search-færdigheden for at finde relevant kontekst
 
@@ -212,7 +213,7 @@ Se [Søgeværktøjsguide](https://docs.claude-mem.ai/usage/search-tools) for det
 
 ## Beta-funktioner
 
-Claude-Mem tilbyder en **beta-kanal** med eksperimentelle funktioner som **Endless Mode** (biomimetisk hukommelsesarkitektur til udvidede sessioner). Skift mellem stabile og beta-versioner fra web viewer UI på http://localhost:37777 → Settings.
+Claude-Mem tilbyder en **beta-kanal** med eksperimentelle funktioner som **Endless Mode** (biomimetisk hukommelsesarkitektur til udvidede sessioner). Skift mellem stabile og beta-versioner fra web viewer UI på <http://localhost:37777> → Settings.
 
 Se **[Beta-funktionsdokumentation](https://docs.claude-mem.ai/beta-features)** for detaljer om Endless Mode og hvordan du prøver det.
 
@@ -286,7 +287,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Support
 

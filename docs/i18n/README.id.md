@@ -116,12 +116,12 @@ Restart Claude Code. Konteks dari sesi sebelumnya akan secara otomatis muncul di
 - 🧠 **Memori Persisten** - Konteks bertahan di seluruh sesi
 - 📊 **Progressive Disclosure** - Pengambilan memori berlapis dengan visibilitas biaya token
 - 🔍 **Pencarian Berbasis Skill** - Query riwayat proyek Anda dengan mem-search skill
-- 🖥️ **Web Viewer UI** - Stream memori real-time di http://localhost:37777
+- 🖥️ **Web Viewer UI** - Stream memori real-time di <http://localhost:37777>
 - 💻 **Claude Desktop Skill** - Cari memori dari percakapan Claude Desktop
 - 🔒 **Kontrol Privasi** - Gunakan tag `<private>` untuk mengecualikan konten sensitif dari penyimpanan
 - ⚙️ **Konfigurasi Konteks** - Kontrol yang detail atas konteks apa yang diinjeksikan
 - 🤖 **Operasi Otomatis** - Tidak memerlukan intervensi manual
-- 🔗 **Kutipan** - Referensi observasi masa lalu dengan ID (akses melalui http://localhost:37777/api/observation/{id} atau lihat semua di web viewer di http://localhost:37777)
+- 🔗 **Kutipan** - Referensi observasi masa lalu dengan ID (akses melalui <http://localhost:37777/api/observation/{id}> atau lihat semua di web viewer di <http://localhost:37777>)
 - 🧪 **Beta Channel** - Coba fitur eksperimental seperti Endless Mode melalui peralihan versi
 
 ---
@@ -180,6 +180,7 @@ Lihat [Ringkasan Arsitektur](https://docs.claude-mem.ai/architecture/overview) u
 Claude-Mem menyediakan pencarian cerdas melalui mem-search skill yang secara otomatis dipanggil saat Anda bertanya tentang pekerjaan masa lalu:
 
 **Cara Kerja:**
+
 - Tanya saja secara alami: *"Apa yang kita lakukan sesi terakhir?"* atau *"Apakah kita sudah memperbaiki bug ini sebelumnya?"*
 - Claude secara otomatis memanggil mem-search skill untuk menemukan konteks yang relevan
 
@@ -212,7 +213,7 @@ Lihat [Panduan Alat Pencarian](https://docs.claude-mem.ai/usage/search-tools) un
 
 ## Fitur Beta
 
-Claude-Mem menawarkan **beta channel** dengan fitur eksperimental seperti **Endless Mode** (arsitektur memori biomimetik untuk sesi yang diperpanjang). Beralih antara versi stabil dan beta dari web viewer UI di http://localhost:37777 → Settings.
+Claude-Mem menawarkan **beta channel** dengan fitur eksperimental seperti **Endless Mode** (arsitektur memori biomimetik untuk sesi yang diperpanjang). Beralih antara versi stabil dan beta dari web viewer UI di <http://localhost:37777> → Settings.
 
 Lihat **[Dokumentasi Fitur Beta](https://docs.claude-mem.ai/beta-features)** untuk detail tentang Endless Mode dan cara mencobanya.
 
@@ -286,7 +287,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Dukungan
 

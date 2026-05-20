@@ -117,12 +117,12 @@ I-restart ang Claude Code. Awtomatikong lalabas sa mga bagong session ang kontek
 - 🧠 **Persistent Memory** - Nananatili ang konteksto sa pagitan ng mga session
 - 📊 **Progressive Disclosure** - Layered na pagkuha ng memory na may visibility ng token cost
 - 🔍 **Skill-Based Search** - I-query ang history ng proyekto gamit ang mem-search skill
-- 🖥️ **Web Viewer UI** - Real-time memory stream sa http://localhost:37777
+- 🖥️ **Web Viewer UI** - Real-time memory stream sa <http://localhost:37777>
 - 💻 **Claude Desktop Skill** - Maghanap sa memory mula sa Claude Desktop conversations
 - 🔒 **Privacy Control** - Gamitin ang `<private>` tags para hindi ma-store ang sensitibong nilalaman
 - ⚙️ **Context Configuration** - Mas pinong kontrol kung anong konteksto ang ini-inject
 - 🤖 **Automatic Operation** - Walang kailangang manual na intervention
-- 🔗 **Citations** - I-refer ang mga lumang obserbasyon gamit ang IDs (i-access sa http://localhost:37777/api/observation/{id} o tingnan lahat sa web viewer sa http://localhost:37777)
+- 🔗 **Citations** - I-refer ang mga lumang obserbasyon gamit ang IDs (i-access sa <http://localhost:37777/api/observation/{id}> o tingnan lahat sa web viewer sa <http://localhost:37777>)
 - 🧪 **Beta Channel** - Subukan ang mga experimental feature tulad ng Endless Mode sa pamamagitan ng version switching
 
 ---
@@ -224,7 +224,7 @@ Tingnan ang [Search Tools Guide](https://docs.claude-mem.ai/usage/search-tools) 
 
 ## Mga Beta Feature
 
-May **beta channel** ang Claude-Mem na may mga experimental feature gaya ng **Endless Mode** (biomimetic memory architecture para sa mas mahahabang session). Magpalit sa pagitan ng stable at beta versions sa web viewer UI sa http://localhost:37777 → Settings.
+May **beta channel** ang Claude-Mem na may mga experimental feature gaya ng **Endless Mode** (biomimetic memory architecture para sa mas mahahabang session). Magpalit sa pagitan ng stable at beta versions sa web viewer UI sa <http://localhost:37777> → Settings.
 
 Tingnan ang **[Dokumentasyon ng Mga Beta Feature](https://docs.claude-mem.ai/beta-features)** para sa detalye ng Endless Mode at kung paano ito subukan.
 
@@ -248,7 +248,7 @@ Kung makakita ka ng error gaya ng:
 npm : The term 'npm' is not recognized as the name of a cmdlet
 ```
 
-Siguraduhing naka-install ang Node.js at npm at nakadagdag sa PATH. I-download ang pinakabagong Node.js installer mula sa https://nodejs.org at i-restart ang terminal matapos mag-install.
+Siguraduhing naka-install ang Node.js at npm at nakadagdag sa PATH. I-download ang pinakabagong Node.js installer mula sa <https://nodejs.org> at i-restart ang terminal matapos mag-install.
 
 ---
 
@@ -310,7 +310,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Suporta
 

@@ -3,6 +3,7 @@
 **Goal:** Stop the universal installer (`npx claude-mem install`) from silently swallowing real failures and falsely reporting "installed successfully" on all 12 IDEs. Convert every error-suppression site to a single `installerError(severity, ctx)` decision point driven by an explicit taxonomy. Make `tree-sitter` ERESOLVE conflicts and missing `uv` fail loudly with platform-specific remediation. Add a 12-IDE × 4-failure-mode validation matrix and CI postinstall regression guards inspired by the v12.6.2 `tree-sitter-swift` fix.
 
 **Net effect:**
+
 - "Installation Complete" is only printed when every ABORT-level dependency was satisfied. Partial outcomes get a yellow "Installation Partial" headline with a remediation block.
 - `runNpmInstallInMarketplace()` runs strict first; `--legacy-peer-deps` is only applied on a confirmed `ERESOLVE` token, with the fallback announced loudly.
 - Missing `uv` after auto-install attempt = ABORT with platform-specific instructions surfaced as the primary message (not buried under a wrapped "version probe failed" line). When the user has opted out of vector search, downgrade to WARN_CONTINUE.
@@ -10,6 +11,7 @@
 - Cross-IDE test matrix: 12 IDEs × 4 scenarios (happy / ERESOLVE / missing uv / missing bun) = 48 cells, each asserting exit code, summary text, and remediation presence.
 
 **Out of scope (defer to follow-up plans):**
+
 - Replacing `bun-runner.js` (its own runtime concerns; tracked in `plans/2026-04-29-installer-streamline.md`).
 - Re-architecting `bufferConsole` to a structured event stream (this plan only fixes the data loss; full streaming UX is later).
 - Internationalizing the new remediation messages (English-only for now).
@@ -206,7 +208,7 @@ export const ERROR_CATEGORIES: ErrorCategory[] = [ /* see seed list below */ ];
 |---|---|---|---|
 | `bun-missing-after-install` | ABORT | `cause.message.includes('Bun executable not found')` | "Install Bun manually then re-run `npx claude-mem install`. macOS/Linux: `curl -fsSL https://bun.sh/install \| bash`. Windows: `winget install Oven-sh.Bun`." |
 | `uv-missing-after-install` | ABORT (downgradable to WARN_CONTINUE if user opted out of vector search — see Phase 5) | `cause.message.includes('uv executable not found') \|\| cause.message.includes('uv installed but version probe failed')` | Platform-specific block from `installUv()` (lines 164–166) surfaced as primary message. |
-| `tree-sitter-eresolve` | ABORT (after one retry with `--legacy-peer-deps`) | stderr contains literal `ERESOLVE` AND `--legacy-peer-deps` retry also failed | "ERESOLVE conflict in marketplace deps that --legacy-peer-deps could not resolve. Open an issue at https://github.com/thedotmack/claude-mem/issues with the conflicting peer ranges below: \<details\>." |
+| `tree-sitter-eresolve` | ABORT (after one retry with `--legacy-peer-deps`) | stderr contains literal `ERESOLVE` AND `--legacy-peer-deps` retry also failed | "ERESOLVE conflict in marketplace deps that --legacy-peer-deps could not resolve. Open an issue at <https://github.com/thedotmack/claude-mem/issues> with the conflicting peer ranges below: \<details\>." |
 | `bun-install-network-fail` | SILENT_RETRY → WARN_CONTINUE | bun stderr `error: failed to resolve` for a known package on first try, repeated on retry | "bun install failed to resolve packages — check network connectivity and re-run `npx claude-mem install`. Cached packages in ~/.bun/install/cache will be reused." |
 | `marketplace-dir-not-writable` | ABORT | `EACCES`/`EPERM` on `mkdirSync` / `writeFileSync` to `marketplaceDirectory()` | "Cannot write to marketplace directory `${dataDir}/.claude/plugins/...`. Check filesystem permissions or set CLAUDE_MEM_DATA_DIR to a writable path." |
 | `plugin-json-corrupt` | ABORT | JSON.parse error on `plugin.json` | "Existing plugin.json is corrupt. Run `rm -rf ~/.claude/plugins/marketplaces/thedotmack` and re-run install." |
@@ -297,6 +299,7 @@ export function flushSummary(summary: InstallSummary, isInteractive: boolean): v
 For each row in `plans/audit-installer-errors.csv` produced by Phase 1, replace the existing handler with a call to `installerError(severity, ctx, summary)`. Before/after example:
 
 **Before (install.ts:1126–1135):**
+
 ```typescript
 try {
   runNpmInstallInMarketplace();
@@ -308,6 +311,7 @@ try {
 ```
 
 **After:**
+
 ```typescript
 try {
   await runNpmInstallInMarketplace();  // Phase 4: now async w/ ERESOLVE handling
@@ -326,6 +330,7 @@ try {
 ### Rework `bufferConsole`
 
 `src/npx-cli/commands/install.ts:43–64` currently swallows stderr into a string buffer and only surfaces it via `pendingErrors`. After this phase:
+
 - A non-zero result from the wrapped function **must** preserve the stderr verbatim in the returned object (already does).
 - `setupIDEs` (lines 328–347) **must** call `installerError(FAIL_LOUD_PER_IDE, …)` with `eresolveDetails: output.slice(0, 4000)` (first ~80 lines).
 - The IDE summary block **must** show the exit code + first 20 lines of stderr verbatim, not a generic "X failed" line.
@@ -333,6 +338,7 @@ try {
 ### Top-level wiring
 
 In `runInstallCommand` (`install.ts:961`), thread `summary` through:
+
 1. Create `summary` at the top.
 2. Pass to `setupIDEs`, every `runTasks` task, `ensureBun`/`ensureUv`, `runNpmInstallInMarketplace`.
 3. After all tasks, call `flushSummary(summary, isInteractive)` *before* the existing `p.note(summaryLines, installStatus)`.
@@ -415,6 +421,7 @@ async function runNpmInstallInMarketplace(summary: InstallSummary): Promise<void
 ```
 
 Helpers (extract to `src/npx-cli/install/npm-install-helper.ts`):
+
 - `runNpmStrict(cwd, flags): Promise<{ code: number; stdout: string; stderr: string }>` — wraps `spawnSync` with timeout (Phase 7).
 - `extractEresolveBlock(stderr): string` — pulls the `While resolving:` … `Conflicting peer dependency:` block for display.
 
@@ -504,6 +511,7 @@ export async function ensureUv(
 ```
 
 Helpers:
+
 - `userHasOptedOutOfVectorSearch()` — check `SettingsDefaultsManager.loadFromFile(USER_SETTINGS_PATH)` for a `CLAUDE_MEM_DISABLE_VECTOR_SEARCH` setting (define if it does not exist; default false).
 - `platformUvRemediation()` — extract the existing platform-specific block from `installUv` (lines 164–166) into a standalone exported function so both error paths share it.
 
@@ -531,6 +539,7 @@ Helpers:
 **Goal:** Every IDE × every failure mode asserts the right outcome.
 
 **Files to create:**
+
 - `tests/install-error-matrix.test.ts`
 - `Dockerfile.test-installer-matrix`
 
@@ -554,6 +563,7 @@ Use `bun test`'s existing harness. For each of the 12 IDEs (`claude-code`, `gemi
 ### Docker matrix runner
 
 `Dockerfile.test-installer-matrix` extends `Dockerfile.test-installer`:
+
 - Adds `RUN bun install` for the test deps.
 - ENTRYPOINT runs `bun test tests/install-error-matrix.test.ts --reporter junit > /workspace/results.xml`.
 - A `scripts/run-matrix-docker.sh` wrapper builds the image and runs it; CI invokes this on every PR that touches `src/npx-cli/`, `src/services/integrations/`, `scripts/build-hooks.js`, or `tests/install-*`.
@@ -579,6 +589,7 @@ Use `bun test`'s existing harness. For each of the 12 IDEs (`claude-code`, `gemi
 **Goal:** Prevent another `tree-sitter-swift`-style hang. CI must fail when a new transitive dep with `scripts.postinstall` or `scripts.install` lands outside the explicit allowlist.
 
 **Files to create / edit:**
+
 - `scripts/check-postinstall-allowlist.js` (NEW, pre-publish CI)
 - `package.json` `prepublishOnly` script (extend)
 - `src/npx-cli/install/setup-runtime.ts` `installPluginDependencies` (timeout wrapper)
@@ -642,6 +653,7 @@ const installTimeout = process.env.CLAUDE_MEM_INSTALL_TIMEOUT_MS
 ### Apply to all install spawns
 
 Audit-driven list of spawns to wrap:
+
 - `installBun` (line 122–127) — curl pipe-bash, 5 min timeout, allow override.
 - `installUv` (line 152–155) — curl pipe-bash, 5 min timeout.
 - `installPluginDependencies` bun install — 5 min first run, 2 min subsequent.
@@ -669,6 +681,7 @@ Audit-driven list of spawns to wrap:
 **Goal:** Document the taxonomy and remediation map for end-users and contributors. Update CLAUDE.md to cross-reference.
 
 **Files to edit / create:**
+
 - `docs/public/troubleshooting.mdx` (CREATE or EXTEND if it exists)
 - `CLAUDE.md` "Exit Code Strategy" section
 - `plans/04-installer-transparency.md` (this file — already)
@@ -676,6 +689,7 @@ Audit-driven list of spawns to wrap:
 ### What to write
 
 `docs/public/troubleshooting.mdx`:
+
 - Section "Installation errors": lists each `id` from the taxonomy table, the error message format, and the remediation. Markdown table mirroring Phase 2's seed taxonomy.
 - Section "Reading the error": shows a sample stderr block and how to copy-paste the bottom block into a GitHub issue.
 - Section "Debug": doc the `CLAUDE_MEM_INSTALL_TIMEOUT_MS` env var and `~/.claude-mem/last-install-error.json`.
@@ -731,6 +745,7 @@ Audit-driven list of spawns to wrap:
 ### Rollback plan
 
 If post-merge a real-world install regression appears:
+
 1. Revert PR. Each phase is on a separate commit so partial revert is feasible.
 2. The pre-existing `--legacy-peer-deps` unconditional behavior is preserved in git history at the line numbers cited in this plan.
 3. The `~/.claude-mem/last-install-error.json` file written by `installerError` provides a reproducible diagnostic for any user who hits an ABORT — capture this in the rollback issue.
@@ -740,6 +755,7 @@ If post-merge a real-world install regression appears:
 ## Phase boundaries / ordering
 
 Phases must execute in numerical order:
+
 - Phase 0 → Phase 1: discovery before audit.
 - Phase 2 (taxonomy) blocks Phase 3 (reporter uses the enum).
 - Phase 3 (reporter) blocks Phase 4 / 5 (both call `installerError`).

@@ -7,16 +7,18 @@
 Use claude-mem's persistent memory in Cursor without a Claude Code subscription. Choose between free-tier providers (Gemini, OpenRouter) or paid options.
 
 **What You Get**:
+
 - **Persistent memory** that survives across sessions - your AI remembers what it worked on
 - **Automatic capture** of MCP tools, shell commands, and file edits
 - **Context injection** via `.cursor/rules/` - relevant history included in every chat
-- **Web viewer** at http://localhost:37777 - browse and search your project history
+- **Web viewer** at <http://localhost:37777> - browse and search your project history
 
 **Why This Matters**: Every Cursor session starts fresh. Claude-mem bridges that gap - your AI agent builds cumulative knowledge about your codebase, decisions, and patterns over time.
 
 ## Prerequisites
 
 ### macOS / Linux
+
 - Cursor IDE
 - [Bun](https://bun.sh) (`curl -fsSL https://bun.sh/install | bash`)
 - Git
@@ -25,6 +27,7 @@ Use claude-mem's persistent memory in Cursor without a Claude Code subscription.
   - **Linux**: `apt install jq curl`
 
 ### Windows
+
 - Cursor IDE
 - [Bun](https://bun.sh) (PowerShell: `powershell -c "irm bun.sh/install.ps1 | iex"`)
 - Git
@@ -67,7 +70,7 @@ cat > ~/.claude-mem/settings.json << 'EOF'
 EOF
 ```
 
-**Get your free API key**: https://aistudio.google.com/apikey
+**Get your free API key**: <https://aistudio.google.com/apikey>
 
 ### Option B: OpenRouter (100+ Models)
 
@@ -83,9 +86,10 @@ cat > ~/.claude-mem/settings.json << 'EOF'
 EOF
 ```
 
-**Get your API key**: https://openrouter.ai/keys
+**Get your API key**: <https://openrouter.ai/keys>
 
 **Free models available**:
+
 - `google/gemini-2.0-flash-exp:free`
 - `xiaomi/mimo-v2-flash:free`
 
@@ -114,6 +118,7 @@ bun run cursor:install
 ```
 
 This installs:
+
 - Hook scripts to `.cursor/hooks/`
 - Hook configuration to `.cursor/hooks.json`
 - Context template to `.cursor/rules/`
@@ -125,6 +130,7 @@ bun run worker:start
 ```
 
 The worker runs in the background and handles:
+
 - Session management
 - Observation processing
 - AI-powered summarization
@@ -135,17 +141,20 @@ The worker runs in the background and handles:
 1. **Restart Cursor IDE** to load the new hooks
 
 2. **Check installation status**:
+
    ```bash
    bun run cursor:status
    ```
 
 3. **Verify the worker is running**:
+
    ```bash
    curl http://127.0.0.1:37777/api/readiness
    ```
+
    Should return: `{"status":"ready"}`
 
-4. **Open the web viewer**: http://localhost:37777
+4. **Open the web viewer**: <http://localhost:37777>
 
 ## How It Works
 
@@ -159,6 +168,7 @@ The worker runs in the background and handles:
 ### "No provider configured" error
 
 Verify your settings file exists and has valid credentials:
+
 ```bash
 cat ~/.claude-mem/settings.json
 ```
@@ -166,6 +176,7 @@ cat ~/.claude-mem/settings.json
 ### Worker not starting
 
 Check logs:
+
 ```bash
 tail -f ~/.claude-mem/logs/worker-$(date +%Y-%m-%d).log
 ```
@@ -174,14 +185,17 @@ tail -f ~/.claude-mem/logs/worker-$(date +%Y-%m-%d).log
 
 1. Check Cursor Settings → Hooks tab for errors
 2. Verify scripts are executable:
+
    ```bash
    chmod +x ~/.cursor/hooks/*.sh
    ```
+
 3. Check the Hooks output channel in Cursor
 
 ### Rate limiting (Gemini free tier)
 
 If you hit the 1500 requests/day limit:
+
 - Wait until the next day
 - Upgrade to a paid plan
 - Switch to OpenRouter with a paid model
@@ -190,7 +204,7 @@ If you hit the 1500 requests/day limit:
 
 - Read [README.md](README.md) for detailed hook documentation
 - Check [CONTEXT-INJECTION.md](CONTEXT-INJECTION.md) for context behavior details
-- Visit https://docs.claude-mem.ai for full documentation
+- Visit <https://docs.claude-mem.ai> for full documentation
 
 ## Quick Reference
 
@@ -265,6 +279,7 @@ The `hooks.json` file is configured to invoke PowerShell with `-ExecutionPolicy 
 **"Execution of scripts is disabled on this system"**
 
 Run as Administrator:
+
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 ```
@@ -272,11 +287,13 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
 **PowerShell scripts not running**
 
 Verify the hooks.json contains PowerShell invocations:
+
 ```powershell
 Get-Content .cursor\hooks.json
 ```
 
 Should show commands like:
+
 ```
 powershell.exe -ExecutionPolicy Bypass -File "./.cursor/hooks/session-init.ps1"
 ```
@@ -284,6 +301,7 @@ powershell.exe -ExecutionPolicy Bypass -File "./.cursor/hooks/session-init.ps1"
 **Worker not responding**
 
 Check if port 37777 is in use:
+
 ```powershell
 Get-NetTCPConnection -LocalPort 37777
 ```

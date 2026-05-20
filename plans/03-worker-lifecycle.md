@@ -436,6 +436,7 @@ Persistent state file shape:
 1. **CircuitBreaker class**: pure logic class, no I/O. Methods: `getState()`, `canAttempt()`, `recordFailure(reason)`, `recordSuccess()`, `forceReset()`. Atomic file writes (write tmp + rename) for the JSON snapshot, mirroring `writeHookFailureStateAtomic` (worker-utils.ts:372).
 
 2. **Wire into `executeWithWorkerFallback`**:
+
    ```
    if (!breaker.canAttempt()) {
      // Optional: print one-line stderr if state changed during this call
@@ -568,6 +569,7 @@ Persistent state file shape:
 `GET /api/healthz?format=prom` → 200 `text/plain` with Prometheus text format. One metric per JSON leaf (e.g. `claude_mem_db_free_ratio_pct 0.16`).
 
 `status` derivation:
+
 - `unhealthy` if breaker is OPEN_PERMANENT, OR DB initialization failed, OR chroma-mcp pid count > `CLAUDE_MEM_CHROMA_MAX_CONCURRENT`.
 - `degraded` if breaker is OPEN, OR free_ratio > 0.4, OR oldest_processing_pending > 1 hour, OR worker version mismatches plugin version.
 - `ok` otherwise.
@@ -661,6 +663,7 @@ Recent maintenance (last 24h):
 ```
 
 If `status != ok`, append a "Recommended actions" block:
+
 - breaker open → `claude-mem worker reset-breaker`
 - DB free ratio high → mention next vacuum window
 - chroma orphans → `claude-mem worker reap-chroma`

@@ -19,6 +19,7 @@ claude-mem cursor install
 ```
 
 This:
+
 1. Copies hook scripts to `.cursor/hooks/`
 2. Creates `hooks.json` configuration
 3. Fetches existing context from claude-mem and writes to `.cursor/rules/claude-mem-context.mdc`
@@ -96,18 +97,21 @@ description: "Claude-mem context from past sessions (auto-updated)"
 Context updates at **three points**:
 
 **Before each prompt:**
+
 1. User submits a prompt
 2. `beforeSubmitPrompt` hook runs `context-inject.sh`
 3. Context file refreshed with latest observations from previous sessions
 4. Cursor reads the updated rules file
 
 **After summary completes (worker auto-update):**
+
 1. Summary is saved to database
 2. Worker checks if project is registered for Cursor
 3. If yes, immediately writes updated context file with new observations
 4. No hook involved - happens in the worker process
 
 **After session ends (fallback):**
+
 1. Agent completes (loop ends)
 2. `stop` hook runs `session-summary.sh`
 3. Context file updated (ensures nothing was missed)
@@ -118,6 +122,7 @@ Context updates at **three points**:
 When you run `claude-mem cursor install`, the project is registered in `~/.claude-mem/cursor-projects.json`. This allows the worker to automatically update your context file whenever a new summary is generated - even if it happens from Claude Code or another IDE working on the same project.
 
 To see registered projects:
+
 ```bash
 cat ~/.claude-mem/cursor-projects.json
 ```
@@ -136,10 +141,12 @@ cat ~/.claude-mem/cursor-projects.json
 ## First Session Behavior
 
 When you run `claude-mem cursor install`:
+
 - If worker is running with existing memory → initial context is generated
 - If no existing memory → placeholder file created
 
 Context is then automatically refreshed:
+
 - Before each prompt (ensures latest observations are included)
 - After each session ends (captures new observations from the session)
 
@@ -148,6 +155,7 @@ Context is then automatically refreshed:
 ### 1. MCP Tools
 
 Configure claude-mem's MCP server in Cursor for search tools:
+
 - `search(query, project, limit)`
 - `timeline(anchor, depth_before, depth_after)`
 - `get_observations(ids)`
@@ -163,11 +171,13 @@ Ask the agent: "Check claude-mem for any previous work on authentication"
 ## File Location
 
 The context file is created at:
+
 ```
 <workspace>/.cursor/rules/claude-mem-context.mdc
 ```
 
 This is version-controlled by default. Add to `.gitignore` if you don't want to commit it:
+
 ```
 .cursor/rules/claude-mem-context.mdc
 ```

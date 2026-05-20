@@ -62,15 +62,15 @@ This needs to be reconciled before swapping engines; otherwise the migration wil
 
 Sources checked:
 
-- GitHub: https://github.com/taskforcesh/bullmq
-- NPM: https://www.npmjs.com/package/bullmq
-- Docs: https://docs.bullmq.io/
-- Queues: https://docs.bullmq.io/guide/queues
-- Connections/Redis constraints: https://docs.bullmq.io/guide/connections
-- Production notes: https://docs.bullmq.io/guide/going-to-production
-- Manual processing: https://docs.bullmq.io/patterns/manually-fetching-jobs
-- Job IDs/dedupe: https://docs.bullmq.io/guide/jobs/job-ids
-- Stalled jobs: https://docs.bullmq.io/guide/workers/stalled-jobs
+- GitHub: <https://github.com/taskforcesh/bullmq>
+- NPM: <https://www.npmjs.com/package/bullmq>
+- Docs: <https://docs.bullmq.io/>
+- Queues: <https://docs.bullmq.io/guide/queues>
+- Connections/Redis constraints: <https://docs.bullmq.io/guide/connections>
+- Production notes: <https://docs.bullmq.io/guide/going-to-production>
+- Manual processing: <https://docs.bullmq.io/patterns/manually-fetching-jobs>
+- Job IDs/dedupe: <https://docs.bullmq.io/guide/jobs/job-ids>
+- Stalled jobs: <https://docs.bullmq.io/guide/workers/stalled-jobs>
 
 Current package/repo facts captured on 2026-05-06:
 
@@ -127,8 +127,8 @@ Best BullMQ shape if adopted:
 
 Sources checked:
 
-- GitHub: https://github.com/bee-queue/bee-queue
-- NPM: https://www.npmjs.com/package/bee-queue
+- GitHub: <https://github.com/bee-queue/bee-queue>
+- NPM: <https://www.npmjs.com/package/bee-queue>
 - README/API docs in repository.
 
 Current package/repo facts captured on 2026-05-06:

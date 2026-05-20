@@ -116,12 +116,12 @@ Claude Code를 재시작하세요. 이전 세션의 컨텍스트가 자동으로
 - 🧠 **지속적인 메모리** - 세션 간 컨텍스트 유지
 - 📊 **점진적 공개** - 토큰 비용 가시성을 갖춘 계층화된 메모리 검색
 - 🔍 **스킬 기반 검색** - mem-search 스킬로 프로젝트 기록 쿼리
-- 🖥️ **웹 뷰어 UI** - http://localhost:37777 에서 실시간 메모리 스트림 확인
+- 🖥️ **웹 뷰어 UI** - <http://localhost:37777> 에서 실시간 메모리 스트림 확인
 - 💻 **Claude Desktop 스킬** - Claude Desktop 대화에서 메모리 검색
 - 🔒 **개인정보 제어** - `<private>` 태그를 사용하여 민감한 콘텐츠를 저장소에서 제외
 - ⚙️ **컨텍스트 설정** - 주입되는 컨텍스트에 대한 세밀한 제어
 - 🤖 **자동 작동** - 수동 개입 불필요
-- 🔗 **인용** - ID로 과거 관찰 참조 (http://localhost:37777/api/observation/{id} 를 통해 액세스하거나 http://localhost:37777 의 웹 뷰어에서 모두 보기)
+- 🔗 **인용** - ID로 과거 관찰 참조 (<http://localhost:37777/api/observation/{id}> 를 통해 액세스하거나 <http://localhost:37777> 의 웹 뷰어에서 모두 보기)
 - 🧪 **베타 채널** - 버전 전환을 통해 Endless Mode와 같은 실험적 기능 사용
 
 ---
@@ -180,6 +180,7 @@ Claude Code를 재시작하세요. 이전 세션의 컨텍스트가 자동으로
 Claude-Mem은 과거 작업에 대해 질문할 때 자동으로 호출되는 mem-search 스킬을 통해 지능형 검색을 제공합니다:
 
 **작동 방식:**
+
 - 자연스럽게 질문하세요: *"지난 세션에서 무엇을 했나요?"* 또는 *"이 버그를 이전에 수정했나요?"*
 - Claude가 관련 컨텍스트를 찾기 위해 mem-search 스킬을 자동으로 호출합니다
 
@@ -212,7 +213,7 @@ Claude-Mem은 과거 작업에 대해 질문할 때 자동으로 호출되는 me
 
 ## 베타 기능
 
-Claude-Mem은 **Endless Mode**(확장된 세션을 위한 생체모방 메모리 아키텍처)와 같은 실험적 기능을 제공하는 **베타 채널**을 제공합니다. http://localhost:37777 → Settings의 웹 뷰어 UI에서 안정 버전과 베타 버전 간 전환이 가능합니다.
+Claude-Mem은 **Endless Mode**(확장된 세션을 위한 생체모방 메모리 아키텍처)와 같은 실험적 기능을 제공하는 **베타 채널**을 제공합니다. <http://localhost:37777> → Settings의 웹 뷰어 UI에서 안정 버전과 베타 버전 간 전환이 가능합니다.
 
 Endless Mode 및 사용 방법에 대한 자세한 내용은 **[베타 기능 문서](https://docs.claude-mem.ai/beta-features)**를 참조하세요.
 
@@ -286,7 +287,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## 지원
 

@@ -83,6 +83,7 @@ The codebase has accumulated **defenders** (orphan cleanup → duplicate detecti
    - Keep `setsid` wrapper on Unix when available (process-group cleanup on parent death).
    - Delete the PowerShell branch entirely.
 3. Rewrite `worker-service.ts:1154-1175` restart case:
+
    ```
    await httpShutdown(port)
    const free = await waitForPortFree(port, 5000)
@@ -93,6 +94,7 @@ The codebase has accumulated **defenders** (orphan cleanup → duplicate detecti
    removePidFile()
    spawnDaemon(__filename, port)
    ```
+
 4. Re-verify #2090/#2095 are already fixed by reading `session-init.ts:30-80`. If yes, log "no-op" in plan execution notes. If the original repro still fires, add `|| true`-equivalent at the hooks.json shell wrapper layer (NOT in the handler itself).
 5. Confirm #2117 (cleanup SIGKILLs own ancestors) goes away once cleanup is deleted.
 

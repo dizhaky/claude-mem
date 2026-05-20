@@ -115,12 +115,12 @@ Herstart Claude Code. Context van eerdere sessies verschijnt automatisch in nieu
 - 🧠 **Persistent Geheugen** - Context blijft behouden tussen sessies
 - 📊 **Progressieve Onthulling** - Gelaagde geheugenophaling met zichtbaarheid van tokenkosten
 - 🔍 **Vaardigheidgebaseerd Zoeken** - Bevraag je projectgeschiedenis met mem-search vaardigheid
-- 🖥️ **Web Viewer UI** - Real-time geheugenstroom op http://localhost:37777
+- 🖥️ **Web Viewer UI** - Real-time geheugenstroom op <http://localhost:37777>
 - 💻 **Claude Desktop Vaardigheid** - Zoek geheugen vanuit Claude Desktop gesprekken
 - 🔒 **Privacycontrole** - Gebruik `<private>` tags om gevoelige content uit te sluiten van opslag
 - ⚙️ **Context Configuratie** - Fijnmazige controle over welke context wordt geïnjecteerd
 - 🤖 **Automatische Werking** - Geen handmatige tussenkomst vereist
-- 🔗 **Citaten** - Verwijs naar eerdere waarnemingen met ID's (toegang via http://localhost:37777/api/observation/{id} of bekijk alle in de web viewer op http://localhost:37777)
+- 🔗 **Citaten** - Verwijs naar eerdere waarnemingen met ID's (toegang via <http://localhost:37777/api/observation/{id}> of bekijk alle in de web viewer op <http://localhost:37777>)
 - 🧪 **Bètakanaal** - Probeer experimentele functies zoals Endless Mode via versieschakeling
 
 ---
@@ -179,6 +179,7 @@ Zie [Architectuuroverzicht](https://docs.claude-mem.ai/architecture/overview) vo
 Claude-Mem biedt intelligent zoeken via de mem-search vaardigheid die automatisch wordt aangeroepen wanneer je vraagt over eerder werk:
 
 **Hoe Het Werkt:**
+
 - Vraag gewoon natuurlijk: *"Wat hebben we vorige sessie gedaan?"* of *"Hebben we deze bug eerder opgelost?"*
 - Claude roept automatisch de mem-search vaardigheid aan om relevante context te vinden
 
@@ -211,7 +212,7 @@ Zie [Zoektools Gids](https://docs.claude-mem.ai/usage/search-tools) voor gedetai
 
 ## Bètafuncties
 
-Claude-Mem biedt een **bètakanaal** met experimentele functies zoals **Endless Mode** (biomimetische geheugenarchitectuur voor uitgebreide sessies). Schakel tussen stabiele en bètaversies vanuit de web viewer UI op http://localhost:37777 → Settings.
+Claude-Mem biedt een **bètakanaal** met experimentele functies zoals **Endless Mode** (biomimetische geheugenarchitectuur voor uitgebreide sessies). Schakel tussen stabiele en bètaversies vanuit de web viewer UI op <http://localhost:37777> → Settings.
 
 Zie **[Bètafuncties Documentatie](https://docs.claude-mem.ai/beta-features)** voor details over Endless Mode en hoe je het kunt proberen.
 
@@ -285,7 +286,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Ondersteuning
 

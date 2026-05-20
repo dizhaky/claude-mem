@@ -230,6 +230,7 @@ main();
 ## Cost Estimation
 
 Typical costs per language (varies by README length):
+
 - Short README (~500 words): ~$0.01-0.02
 - Medium README (~2000 words): ~$0.05-0.10
 - Long README (~5000 words): ~$0.15-0.25

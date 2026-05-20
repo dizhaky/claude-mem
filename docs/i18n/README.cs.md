@@ -116,12 +116,12 @@ Restartujte Claude Code. Kontext z předchozích sezení se automaticky objeví 
 - 🧠 **Trvalá paměť** - Kontext přetrvává napříč sezeními
 - 📊 **Postupné odhalování** - Vrstvené vyhledávání paměti s viditelností nákladů na tokeny
 - 🔍 **Vyhledávání založené na dovednostech** - Dotazujte se na historii projektu pomocí dovednosti mem-search
-- 🖥️ **Webové uživatelské rozhraní** - Tok paměti v reálném čase na http://localhost:37777
+- 🖥️ **Webové uživatelské rozhraní** - Tok paměti v reálném čase na <http://localhost:37777>
 - 💻 **Dovednost pro Claude Desktop** - Vyhledávejte v paměti z konverzací Claude Desktop
 - 🔒 **Kontrola soukromí** - Použijte značky `<private>` k vyloučení citlivého obsahu z úložiště
 - ⚙️ **Konfigurace kontextu** - Jemně odstupňovaná kontrola nad tím, jaký kontext se vkládá
 - 🤖 **Automatický provoz** - Není vyžadován žádný manuální zásah
-- 🔗 **Citace** - Odkazujte na minulá pozorování pomocí ID (přístup přes http://localhost:37777/api/observation/{id} nebo zobrazit vše ve webovém prohlížeči na http://localhost:37777)
+- 🔗 **Citace** - Odkazujte na minulá pozorování pomocí ID (přístup přes <http://localhost:37777/api/observation/{id}> nebo zobrazit vše ve webovém prohlížeči na <http://localhost:37777>)
 - 🧪 **Beta kanál** - Vyzkoušejte experimentální funkce jako Endless Mode přepnutím verze
 
 ---
@@ -180,6 +180,7 @@ Podrobnosti najdete v [Přehledu architektury](https://docs.claude-mem.ai/archit
 Claude-Mem poskytuje inteligentní vyhledávání prostřednictvím dovednosti mem-search, která se automaticky vyvolá, když se ptáte na minulou práci:
 
 **Jak to funguje:**
+
 - Stačí se zeptat přirozeně: *"Co jsme dělali minulé sezení?"* nebo *"Opravovali jsme tuto chybu dříve?"*
 - Claude automaticky vyvolá dovednost mem-search k nalezení relevantního kontextu
 
@@ -212,7 +213,7 @@ Podrobné příklady najdete v [Průvodci vyhledávacími nástroji](https://doc
 
 ## Beta funkce
 
-Claude-Mem nabízí **beta kanál** s experimentálními funkcemi jako **Endless Mode** (biomimetická architektura paměti pro prodloužená sezení). Přepínejte mezi stabilní a beta verzí z webového rozhraní na http://localhost:37777 → Settings.
+Claude-Mem nabízí **beta kanál** s experimentálními funkcemi jako **Endless Mode** (biomimetická architektura paměti pro prodloužená sezení). Přepínejte mezi stabilní a beta verzí z webového rozhraní na <http://localhost:37777> → Settings.
 
 Podrobnosti o Endless Mode a jak jej vyzkoušet najdete v **[Dokumentaci beta funkcí](https://docs.claude-mem.ai/beta-features)**.
 
@@ -286,7 +287,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Podpora
 

@@ -115,12 +115,12 @@ Claude Code'u yeniden başlatın. Önceki oturumlardaki bağlam otomatik olarak 
 - 🧠 **Kalıcı Bellek** - Bağlam oturumlar arası hayatta kalır
 - 📊 **Aşamalı Açıklama** - Token maliyeti görünürlüğü ile katmanlı bellek erişimi
 - 🔍 **Beceri Tabanlı Arama** - mem-search becerisi ile proje geçmişinizi sorgulayın
-- 🖥️ **Web Görüntüleyici Arayüzü** - http://localhost:37777 adresinde gerçek zamanlı bellek akışı
+- 🖥️ **Web Görüntüleyici Arayüzü** - <http://localhost:37777> adresinde gerçek zamanlı bellek akışı
 - 💻 **Claude Desktop Becerisi** - Claude Desktop konuşmalarından bellek araması yapın
 - 🔒 **Gizlilik Kontrolü** - Hassas içeriği depolamadan hariç tutmak için `<private>` etiketlerini kullanın
 - ⚙️ **Bağlam Yapılandırması** - Hangi bağlamın enjekte edileceği üzerinde detaylı kontrol
 - 🤖 **Otomatik Çalışma** - Manuel müdahale gerektirmez
-- 🔗 **Alıntılar** - ID'lerle geçmiş gözlemlere referans verin (http://localhost:37777/api/observation/{id} üzerinden erişin veya http://localhost:37777 adresindeki web görüntüleyicide tümünü görüntüleyin)
+- 🔗 **Alıntılar** - ID'lerle geçmiş gözlemlere referans verin (<http://localhost:37777/api/observation/{id}> üzerinden erişin veya <http://localhost:37777> adresindeki web görüntüleyicide tümünü görüntüleyin)
 - 🧪 **Beta Kanalı** - Sürüm değiştirme yoluyla Endless Mode gibi deneysel özellikleri deneyin
 
 ---
@@ -179,6 +179,7 @@ Detaylar için [Mimari Genel Bakış](https://docs.claude-mem.ai/architecture/ov
 Claude-Mem, geçmiş çalışmalarınız hakkında sorduğunuzda otomatik olarak devreye giren mem-search becerisi aracılığıyla akıllı arama sağlar:
 
 **Nasıl Çalışır:**
+
 - Sadece doğal bir şekilde sorun: *"Geçen oturumda ne yaptık?"* veya *"Bu hatayı daha önce düzelttik mi?"*
 - Claude, ilgili bağlamı bulmak için otomatik olarak mem-search becerisini çağırır
 
@@ -211,7 +212,7 @@ Detaylı örnekler için [Arama Araçları Kılavuzu](https://docs.claude-mem.ai
 
 ## Beta Özellikleri
 
-Claude-Mem, **Endless Mode** (genişletilmiş oturumlar için biyomimetik bellek mimarisi) gibi deneysel özellikler içeren bir **beta kanalı** sunar. http://localhost:37777 → Settings adresindeki web görüntüleyici arayüzünden kararlı ve beta sürümleri arasında geçiş yapın.
+Claude-Mem, **Endless Mode** (genişletilmiş oturumlar için biyomimetik bellek mimarisi) gibi deneysel özellikler içeren bir **beta kanalı** sunar. <http://localhost:37777> → Settings adresindeki web görüntüleyici arayüzünden kararlı ve beta sürümleri arasında geçiş yapın.
 
 Endless Mode hakkında detaylar ve nasıl deneyeceğiniz için **[Beta Özellikleri Dokümantasyonu](https://docs.claude-mem.ai/beta-features)** bölümüne bakın.
 
@@ -285,7 +286,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Destek
 

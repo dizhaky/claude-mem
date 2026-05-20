@@ -9,6 +9,7 @@ The `context-inject.sh` hook **automatically creates and updates** a rules file 
 ```
 
 This file:
+
 - Has `alwaysApply: true` so it's included in every chat session
 - Contains recent context from past sessions
 - Auto-refreshes on every prompt submission
@@ -35,17 +36,23 @@ You have access to claude-mem, a persistent memory system. In addition to the au
 
 1. **search** - Find relevant past observations
    ```
+
    search(query="authentication bug", project="my-project", limit=10)
+
    ```
 
 2. **timeline** - Get context around a specific observation
    ```
+
    timeline(anchor=<observation_id>, depth_before=3, depth_after=3)
+
    ```
 
 3. **get_observations** - Fetch full details for specific IDs
    ```
+
    get_observations(ids=[123, 456])
+
    ```
 
 ## When to Search Memory

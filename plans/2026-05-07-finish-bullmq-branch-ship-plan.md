@@ -41,19 +41,26 @@ Phases 3–13 (BullMQ queue, event-to-job pipeline, provider extraction, hook ro
 ### What To Run
 
 1. `tsc --noEmit` scoped to Postgres storage:
+
    ```bash
    bunx tsc --noEmit src/storage/postgres/*.ts
    ```
+
 2. Postgres integration suite (requires `DATABASE_URL` or local Postgres on default port):
+
    ```bash
    bun test tests/storage/postgres
    ```
+
 3. Anti-pattern greps (must all return zero matches in `src/storage/postgres/`):
+
    ```bash
    rg -n "UNIQUE\s*\(\s*source_type\s*,\s*source_id\s*,\s*job_type\s*\)" src/storage/postgres
    rg -n "UNIQUE\s*\(\s*observation_id\s*,\s*source_type\s*,\s*source_id\s*\)" src/storage/postgres
    ```
+
 4. Scoped-mutation grep (must show `projectId`/`teamId` parameters):
+
    ```bash
    rg -n "addSource|transitionStatus|append" src/storage/postgres
    ```
@@ -74,25 +81,34 @@ Phases 3–13 (BullMQ queue, event-to-job pipeline, provider extraction, hook ro
 ### What To Run
 
 1. Phase 2 independence grep — Server beta runtime must not import worker:
+
    ```bash
    rg -n "WorkerService|services/worker-service|worker/http" \
      src/server/runtime src/npx-cli/commands/server.ts
    ```
+
    Allowed: matches inside `src/services/worker-service.ts` itself (delegation back to server-beta is fine). Forbidden: any import inside `src/server/runtime/`.
 2. Server-beta service test:
+
    ```bash
    bun test tests/server/server-beta-service.test.ts
    ```
+
 3. CLI namespace test:
+
    ```bash
    bun test tests/npx-cli-server-namespace.test.ts
    ```
+
 4. Build verifies `server-beta-service.cjs` bundle is produced:
+
    ```bash
    npm run build-and-sync
    ls -la plugin/scripts/server-beta-service.cjs
    ```
+
 5. Smoke test independence:
+
    ```bash
    npx claude-mem server status      # before start
    npx claude-mem server start
@@ -101,6 +117,7 @@ Phases 3–13 (BullMQ queue, event-to-job pipeline, provider extraction, hook ro
    curl -s http://127.0.0.1:$(cat ~/.claude-mem/.server-beta.port)/v1/info
    npx claude-mem server stop
    ```
+
    Worker `start|stop|status` must remain functional throughout.
 
 ### Commit Layout
@@ -240,9 +257,9 @@ Source: parent plan lines 515–570.
 
 ### Documentation References
 
-- BullMQ Workers: https://docs.bullmq.io/guide/workers
-- BullMQ Concurrency: https://docs.bullmq.io/guide/workers/concurrency
-- BullMQ Stalled Jobs: https://docs.bullmq.io/guide/jobs/stalled
+- BullMQ Workers: <https://docs.bullmq.io/guide/workers>
+- BullMQ Concurrency: <https://docs.bullmq.io/guide/workers/concurrency>
+- BullMQ Stalled Jobs: <https://docs.bullmq.io/guide/jobs/stalled>
 - `src/server/queue/BullMqObservationQueueEngine.ts` — copy deterministic job-ID + Redis health patterns; do **not** copy the worker-iterator compatibility shape.
 - `src/server/queue/redis-config.ts` — Valkey/Redis health checks.
 - `src/storage/postgres/generation-jobs.ts` — outbox repository (already committed in 4e0fc77a).

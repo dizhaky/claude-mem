@@ -138,6 +138,7 @@ Or install for Gemini CLI (auto-detects `~/.gemini`):
 ```bash
 npx claude-mem install --ide gemini-cli
 ```
+
 Or install for OpenCode:
 
 ```bash
@@ -171,12 +172,12 @@ The installer handles dependencies, plugin setup, AI provider configuration, wor
 - 🧠 **Persistent Memory** - Context survives across sessions
 - 📊 **Progressive Disclosure** - Layered memory retrieval with token cost visibility
 - 🔍 **Skill-Based Search** - Query your project history with mem-search skill
-- 🖥️ **Web Viewer UI** - Real-time memory stream at http://localhost:37777
+- 🖥️ **Web Viewer UI** - Real-time memory stream at <http://localhost:37777>
 - 💻 **Claude Desktop Skill** - Search memory from Claude Desktop conversations
 - 🔒 **Privacy Control** - Use `<private>` tags to exclude sensitive content from storage
 - ⚙️ **Context Configuration** - Fine-grained control over what context gets injected
 - 🤖 **Automatic Operation** - No manual intervention required
-- 🔗 **Citations** - Reference past observations with IDs (access via http://localhost:37777/api/observation/{id} or view all in the web viewer at http://localhost:37777)
+- 🔗 **Citations** - Reference past observations with IDs (access via <http://localhost:37777/api/observation/{id}> or view all in the web viewer at <http://localhost:37777>)
 - 🧪 **Beta Channel** - Try experimental features like Endless Mode via version switching
 
 ---
@@ -242,6 +243,7 @@ Claude-Mem provides intelligent memory search through **4 MCP tools** following 
 3. **`get_observations`** - Fetch full details ONLY for filtered IDs (~500-1,000 tokens/result)
 
 **How It Works:**
+
 - Claude uses MCP tools to search your memory
 - Start with `search` to get an index of results
 - Use `timeline` to see what was happening around specific observations
@@ -272,7 +274,7 @@ See [Search Tools Guide](https://docs.claude-mem.ai/usage/search-tools) for deta
 
 ## Beta Features
 
-Claude-Mem offers a **beta channel** with experimental features like **Endless Mode** (biomimetic memory architecture for extended sessions). Switch between stable and beta versions from the web viewer UI at http://localhost:37777 → Settings.
+Claude-Mem offers a **beta channel** with experimental features like **Endless Mode** (biomimetic memory architecture for extended sessions). Switch between stable and beta versions from the web viewer UI at <http://localhost:37777> → Settings.
 
 See **[Beta Features Documentation](https://docs.claude-mem.ai/beta-features)** for details on Endless Mode and how to try it.
 
@@ -287,6 +289,7 @@ See **[Beta Features Documentation](https://docs.claude-mem.ai/beta-features)** 
 - **SQLite 3**: For persistent storage (bundled)
 
 ---
+
 ### Windows Setup Notes
 
 If you see an error like:
@@ -295,7 +298,7 @@ If you see an error like:
 npm : The term 'npm' is not recognized as the name of a cmdlet
 ```
 
-Make sure Node.js and npm are installed and added to your PATH. Download the latest Node.js installer from https://nodejs.org and restart your terminal after installation.
+Make sure Node.js and npm are installed and added to your PATH. Download the latest Node.js installer from <https://nodejs.org> and restart your terminal after installation.
 
 ---
 
@@ -310,6 +313,7 @@ See the **[Configuration Guide](https://docs.claude-mem.ai/configuration)** for 
 Claude-Mem supports multiple workflow modes and languages via the `CLAUDE_MEM_MODE` setting.
 
 This option controls both:
+
 - The workflow behavior (e.g. code, chill, investigation)
 - The language used in generated observations
 
@@ -343,7 +347,7 @@ Language-specific modes follow the pattern `code--[lang]` where `[lang]` is the 
 
 #### After Changing Mode
 
-Restart Claude Code to apply the new mode configuration.
+Restart Claude Code to apply the new mode configuration
 ---
 
 ## Development

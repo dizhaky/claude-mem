@@ -61,10 +61,10 @@ If any compatibility endpoint still uses `/v1/memories`, it should be treated as
 
 ### External Docs Read
 
-- BullMQ Workers: https://docs.bullmq.io/guide/workers
-- BullMQ Worker Concurrency: https://docs.bullmq.io/guide/workers/concurrency
-- BullMQ Stalled Jobs: https://docs.bullmq.io/guide/jobs/stalled
-- Better Auth Express integration: https://better-auth.com/docs/integrations/express
+- BullMQ Workers: <https://docs.bullmq.io/guide/workers>
+- BullMQ Worker Concurrency: <https://docs.bullmq.io/guide/workers/concurrency>
+- BullMQ Stalled Jobs: <https://docs.bullmq.io/guide/jobs/stalled>
+- Better Auth Express integration: <https://better-auth.com/docs/integrations/express>
 
 ### Concrete Findings
 

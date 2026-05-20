@@ -178,6 +178,7 @@ Steps:
    On warning, the PDF on disk is still a valid deliverable — do not retry the upload.
 
 Report briefly (under 200 words):
+
 - Final artifact ID
 - Time per phase (source wait, generation, render wait, download)
 - Output file path + size
@@ -186,6 +187,7 @@ Report briefly (under 200 words):
 - Exact error message if any step failed
 
 Do NOT poll status manually. The `wait` commands handle backoff.
+
 ```
 
 ## Failure modes

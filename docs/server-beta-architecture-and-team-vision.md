@@ -258,6 +258,7 @@ The substrate is the same regardless of size. What changes is how you wire up te
 **Topology**: one team, one project per repo (or one project total for a monorepo).
 
 **Wiring**:
+
 - Bootstrap a shared team via `claude-mem server api-key create --team <id> --project <id> --scope memories:write,memories:read`. This is a one-time setup by whoever owns the deployment.
 - Each developer gets their own api key (so revocation is per-person). `actor_id` = `human:alice@org`.
 - All hooks write into the shared (team, project). Observations land in a team pool.
@@ -273,6 +274,7 @@ The substrate is the same regardless of size. What changes is how you wire up te
 **Topology**: one team per squad, one project per service or repo. A "platform" team that holds shared infrastructure.
 
 **Wiring**:
+
 - Per-squad team rows. Each squad's developers have keys scoped to that team.
 - Per-project keys for finer access control (a backend dev who shouldn't be writing to the frontend team's memory).
 - A platform team with read-only keys scoped to multiple projects (`scopes: ['observations:read']`, `team_id = platform`, `project_id = NULL` is a valid read scope; cross-project reads filtered by team).
@@ -289,6 +291,7 @@ The substrate is the same regardless of size. What changes is how you wire up te
 **Topology**: teams as organizational units — engineering, data-platform, security. Projects per repo or microservice. A federation team for org-wide read access.
 
 **Wiring**:
+
 - Per-engineer api keys with short expiry (rotated by a key-rotation cron).
 - Per-service-account keys for every CI job, deploy bot, and AI agent.
 - A "compliance" team key with org-wide `observations:read` and `audit:read` scopes (the latter is future work).
@@ -351,6 +354,7 @@ Memory in claude-mem is **a write-mostly event log with a derived observation vi
 - **Summary lane** — session-end summaries. Fed by `/v1/sessions/:id/end` and the compat sessions/summarize adapter. Lower volume, larger payloads (entire session context).
 
 `SessionGenerationPolicy` decides which lane and when:
+
 - `per-event` (default) — every event triggers an event-lane job immediately.
 - `debounce` — events within a window collapse via deterministic job id; `delay: <window>` schedules and re-adds replace.
 - `end-of-session` — per-event jobs are skipped; only the session-end summary fires.
@@ -499,45 +503,59 @@ The pattern: **the substrate models everything; products are thin views on top.*
 Brainstormed product ideas that fall out of the substrate without new infrastructure:
 
 ### 13.1 Memory feeds
+
 A Slack bot subscribed to `audit_logs WHERE action = 'memory.write' AND team_id = …` posts a daily digest of new observations into the squad channel. Zero capture work; the AI is doing it as a side effect of normal sessions.
 
 ### 13.2 PR-aware AI review
+
 When a PR opens, a service account queries `/v1/search` with the diff's file paths and function names. The AI reviewer surfaces "the team's prior reasoning about this code" as a PR comment. The diff context plus team memory lifts review quality without any explicit knowledge curation.
 
 ### 13.3 Onboarding companion
+
 A new hire's first session. Their MCP `observation_search` query "how does authentication work" returns the team's actual lived answer — including the bugs hit, the dead ends, the why behind the structure — instead of a stale README.
 
 ### 13.4 Stale-context warnings
+
 When an observation is more than N weeks old AND its source file has been touched since, flag it as potentially stale in the search results. The data model already has `agent_events.created_at` and source file paths in payload metadata.
 
 ### 13.5 Cross-project federation
+
 A "platform" team key with `observations:read` scoped to multiple projects. Platform engineers see their dependents' memory without dependents doing anything.
 
 ### 13.6 Cost dashboards
+
 Per-team, per-model token spend. One SQL query against the `observation_generation_jobs` table joined against `audit_logs`. Build a Grafana panel; ship.
 
 ### 13.7 Compliance reports
+
 "Show all observations created by `api_key_id <X>` between dates A–B for `team <T>`." Subpoena-ready in one query.
 
 ### 13.8 AI agent memory marketplace
+
 Open-source observation packs. "React 19 patterns", "Postgres performance", "AWS CDK gotchas". Mountable as a read-only `team_id` namespace for any deployment. Curated content with attribution preserved.
 
 ### 13.9 Privacy-first synthesis
+
 Aggregate observations across team members. `<private>` stripping happens at edge so personal scratch never crosses the boundary, but distilled lessons do. The substrate's two-layer privacy (per-content tags + per-tenant scope) makes this safe.
 
 ### 13.10 Cross-team learning propagation
+
 A security incident in one team. An observation propagation service copies relevant observations to the security team's space, with audit chain showing the cross-team transfer (and the `api_key_id` that authorized it).
 
 ### 13.11 Voice-to-memory standup bots
+
 A daily standup bot asks "what's blocking you?". The answer becomes an observation against the right project, with `actor_id = human:<engineer>`. End-of-week, the AI summarizes blockers across the team — already in the same memory pool the AI uses for code suggestions.
 
 ### 13.12 Documentation that writes itself
+
 Filter observations by `kind = 'decision'` or `kind = 'architecture'`. Generate ADRs (architecture decision records) automatically with author attribution from `actor_id` and timestamps from `created_at`. The substrate captures the reasoning in the moment; a thin transformer layer renders it as docs later.
 
 ### 13.13 Trust chains for AI suggestions
+
 Every observation already has `(api_key_id, actor_id, model_id, request_id)`. A surfacing layer can show "this suggestion is based on N observations from Alice + M from Bob, model claude-3-5-sonnet, generated within the last 14 days." Fully auditable AI provenance.
 
 ### 13.14 Multi-modal memory
+
 Today the capture layer is hook events with text payloads. Tomorrow: screenshots from the IDE (PNG bytes in payload), voice transcripts (audio + transcript), terminal recordings. The substrate's `payload jsonb` column accommodates anything; `source_type` extends.
 
 The unifying property of all these: **the developer does nothing different.** The capture layer is invisible, the substrate handles scope and identity, the products read off the same `/v1` surface. That's "it just works", scaled to teams.
@@ -549,30 +567,39 @@ The unifying property of all these: **the developer does nothing different.** Th
 This deserves its own section because it's the deeper "why" behind all of the above.
 
 ### 14.1 The tacit knowledge gap
+
 Most engineering knowledge is transmitted orally — in PR comments, 1:1s, Slack threads that age out. AI agents amplify whoever uses them, but only locally. A senior engineer's mental model of the codebase doesn't persist when they go on vacation, leave, or simply work on a different project for two weeks. Server-beta makes that mental model addressable: their sessions write observations the team can search.
 
 ### 14.2 Onboarding asymmetry
+
 New hires take weeks to ramp. Half of that is rediscovering decisions that were already made. With shared memory, "why did we choose Postgres over SQLite for this service" returns the actual reasoning from when the choice was made — not a doc someone wrote later.
 
 ### 14.3 Code review fatigue
+
 Senior engineers explain the same patterns over and over. Every "we don't do that here because X" is a candidate observation. Once captured, the next AI suggestion to a different engineer can carry that constraint forward — with attribution, so it's explainable.
 
 ### 14.4 Tribal knowledge departure
+
 People leave. Their git commits stay, but their reasoning leaves. Shared observations capture the "why" alongside the "what". When the engineer leaves, their `actor_id` keeps appearing in surfaced context for months — their reasoning lives on.
 
 ### 14.5 AI parity
+
 Engineers who use AI tools heavily build personal context that compounds. Engineers who don't, lag. Shared memory partially equalizes this — everyone benefits from everyone's AI usage. (This is the team-dev parallel to "everyone benefits from one person's tests".)
 
 ### 14.6 Cross-service understanding
+
 Microservice architectures fracture knowledge across repos. With per-project observations and team-scoped search, a backend engineer can pull "what does the front-end team know about this auth flow" without crossing a documentation boundary.
 
 ### 14.7 Incident response
+
 Every postmortem ends with "we'll write this down" and almost none of the writing actually happens. Observations capture the diagnostic process automatically — including the dead ends, which docs almost never include but are the most valuable for future investigators.
 
 ### 14.8 Trust through attribution
+
 The reason teams resist "AI writing things to a shared store" is fear of garbage data. Server-beta's audit chain (`api_key_id` + `actor_id` + `request_id` + `model_id` + scope-violation refusals) means every observation is traceable to a specific human's session, a specific model run, and a specific provider call. You can revoke a key, audit a session, prove to compliance "yes, the AI knew X because of Y at time Z". That auditability is the precondition for trust.
 
 ### 14.9 The compounding effect
+
 A team of 10 engineers, each generating ~5 observations a day, produces 1000+ observations a month. After six months, the team's collective AI memory contains 6000+ structured, attributed, searchable insights — a corpus larger than most teams' written documentation. The compound interest of "everyone's AI usage feeds everyone else's AI usage" is, in the long run, the most important property.
 
 ---

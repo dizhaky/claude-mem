@@ -55,12 +55,12 @@ Server beta must reach feature parity by wrapping or copying worker behavior beh
 
 ### External Docs Read
 
-- BullMQ Queues: https://docs.bullmq.io/guide/queues
-- BullMQ Job IDs: https://docs.bullmq.io/guide/jobs/job-ids
-- BullMQ Stalled Jobs: https://docs.bullmq.io/guide/jobs/stalled
-- Better Auth Express Integration: https://better-auth.com/docs/integrations/express
-- Better Auth API Key Plugin: https://better-auth.com/docs/plugins/api-key
-- Better Auth Organization Plugin: https://better-auth.com/docs/plugins/organization
+- BullMQ Queues: <https://docs.bullmq.io/guide/queues>
+- BullMQ Job IDs: <https://docs.bullmq.io/guide/jobs/job-ids>
+- BullMQ Stalled Jobs: <https://docs.bullmq.io/guide/jobs/stalled>
+- Better Auth Express Integration: <https://better-auth.com/docs/integrations/express>
+- Better Auth API Key Plugin: <https://better-auth.com/docs/plugins/api-key>
+- Better Auth Organization Plugin: <https://better-auth.com/docs/plugins/organization>
 
 ### Allowed APIs And Patterns
 

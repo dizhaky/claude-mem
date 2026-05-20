@@ -115,12 +115,12 @@
 - 🧠 **持久記憶** - 脈絡跨工作階段保留
 - 📊 **漸進式揭露** - 具有 Token 成本可見性的分層記憶擷取
 - 🔍 **技能式搜尋** - 使用 mem-search 技能查詢專案歷史
-- 🖥️ **網頁檢視介面** - 在 http://localhost:37777 即時檢視記憶串流
+- 🖥️ **網頁檢視介面** - 在 <http://localhost:37777> 即時檢視記憶串流
 - 💻 **Claude Desktop 技能** - 從 Claude Desktop 對話中搜尋記憶
 - 🔒 **隱私控制** - 使用 `<private>` 標籤排除敏感內容的儲存
 - ⚙️ **脈絡設定** - 精細控制注入哪些脈絡
 - 🤖 **自動運作** - 無需手動介入
-- 🔗 **引用** - 使用 ID 參考過去的觀察（透過 http://localhost:37777/api/observation/{id} 存取，或在 http://localhost:37777 的網頁檢視器中檢視全部）
+- 🔗 **引用** - 使用 ID 參考過去的觀察（透過 <http://localhost:37777/api/observation/{id}> 存取，或在 <http://localhost:37777> 的網頁檢視器中檢視全部）
 - 🧪 **Beta 通道** - 透過版本切換試用 Endless Mode 等實驗性功能
 
 ---
@@ -217,7 +217,7 @@ get_observations(ids=[123, 456])
 
 ## Beta 功能
 
-Claude-Mem 提供具有實驗性功能的 **Beta 通道**，例如 **Endless Mode**（用於延長工作階段的仿生記憶架構）。在 http://localhost:37777 → Settings 的網頁檢視介面中切換穩定版與 Beta 版。
+Claude-Mem 提供具有實驗性功能的 **Beta 通道**，例如 **Endless Mode**（用於延長工作階段的仿生記憶架構）。在 <http://localhost:37777> → Settings 的網頁檢視介面中切換穩定版與 Beta 版。
 
 有關 Endless Mode 與如何試用的詳情，請參閱 **[Beta 功能文件](https://docs.claude-mem.ai/beta-features)**。
 
@@ -291,7 +291,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## 支援
 

@@ -50,12 +50,12 @@ Do not build hosted Magic Recall cloud, billing, SSO/SAML/SCIM, enterprise RBAC 
 
 ### External Docs Read
 
-- BullMQ Queues: https://docs.bullmq.io/guide/queues
-- BullMQ Stalled Jobs: https://docs.bullmq.io/guide/jobs/stalled
-- BullMQ Job IDs: https://docs.bullmq.io/guide/jobs/job-ids
-- Better Auth Express Integration: https://better-auth.com/docs/integrations/express
-- Better Auth API Key Plugin: https://better-auth.com/docs/plugins/api-key
-- Better Auth Organization Plugin: https://better-auth.com/docs/plugins/organization
+- BullMQ Queues: <https://docs.bullmq.io/guide/queues>
+- BullMQ Stalled Jobs: <https://docs.bullmq.io/guide/jobs/stalled>
+- BullMQ Job IDs: <https://docs.bullmq.io/guide/jobs/job-ids>
+- Better Auth Express Integration: <https://better-auth.com/docs/integrations/express>
+- Better Auth API Key Plugin: <https://better-auth.com/docs/plugins/api-key>
+- Better Auth Organization Plugin: <https://better-auth.com/docs/plugins/organization>
 
 ### Allowed APIs And Patterns
 
@@ -94,7 +94,7 @@ What to implement:
 
 Documentation references:
 
-- Copy exact license text from https://www.apache.org/licenses/LICENSE-2.0.
+- Copy exact license text from <https://www.apache.org/licenses/LICENSE-2.0>.
 - Use scope and commercial boundary from `/Users/alexnewman/Downloads/claude-mem-handoff-docs/apache-2-plan.md`.
 
 Verification:

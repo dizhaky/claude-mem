@@ -18,6 +18,7 @@ Looking for ready-to-use integrations? See [Partner Integrations](#partner-integ
 Hooks work with both **Cursor Agent** (Cmd+K/Agent Chat) and **Cursor Tab** (inline completions), but they use different hook events:
 
 **Agent (Cmd+K/Agent Chat)** uses the standard hooks:
+
 - `beforeShellExecution` / `afterShellExecution` - Control shell commands
 - `beforeMCPExecution` / `afterMCPExecution` - Control MCP tool usage
 - `beforeReadFile` / `afterFileEdit` - Control file access and edits
@@ -26,6 +27,7 @@ Hooks work with both **Cursor Agent** (Cmd+K/Agent Chat) and **Cursor Tab** (inl
 - `afterAgentResponse` / `afterAgentThought` - Track agent responses
 
 **Tab (inline completions)** uses specialized hooks:
+
 - `beforeTabFileRead` - Control file access for Tab completions
 - `afterTabFileEdit` - Post-process Tab edits
 
@@ -289,6 +291,7 @@ Hooks can be distributed to team members using project hooks (via version contro
 Project hooks are the simplest way to share hooks with your team. Place a `hooks.json` file at `<project-root>/.cursor/hooks.json` and commit it to your repository. When team members open the project in a trusted workspace, Cursor automatically loads and runs the project hooks.
 
 Project hooks:
+
 - Are stored in version control alongside your code
 - Automatically load for all team members in trusted workspaces
 - Can be project-specific (e.g., enforce formatting standards for a particular codebase)
@@ -299,10 +302,12 @@ Project hooks:
 Distribute hooks across your organization using Mobile Device Management (MDM) tools. Place the `hooks.json` file and hook scripts in the target directories on each machine.
 
 **User home directory** (per-user distribution):
+
 - `~/.cursor/hooks.json`
 - `~/.cursor/hooks/` (for hook scripts)
 
 **Global directories** (system-wide distribution):
+
 - macOS: `/Library/Application Support/Cursor/hooks.json`
 - Linux/WSL: `/etc/cursor/hooks.json`
 - Windows: `C:\\ProgramData\\Cursor\\hooks.json`
@@ -439,6 +444,7 @@ Fires after the Agent edits a file; useful for formatters or accounting of agent
 Called before Tab (inline completions) reads a file. Enable redaction or access control before Tab accesses file contents.
 
 **Key differences from `beforeReadFile`:**
+
 - Only triggered by Tab, not Agent
 - Does not include `attachments` field (Tab doesn't use prompt attachments)
 - Useful for applying different policies to autonomous Tab operations
@@ -461,6 +467,7 @@ Called before Tab (inline completions) reads a file. Enable redaction or access 
 Called after Tab (inline completions) edits a file. Useful for formatters or auditing of Tab-written code.
 
 **Key differences from `afterFileEdit`:**
+
 - Only triggered by Tab, not Agent
 - Includes detailed edit information: `range`, `old_line`, and `new_line` for precise edit tracking
 - Useful for fine-grained formatting or analysis of Tab edits

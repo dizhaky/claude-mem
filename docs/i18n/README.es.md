@@ -117,12 +117,12 @@ Reinicia Claude Code. El contexto de sesiones anteriores aparecerá automáticam
 - 🧠 **Memoria Persistente** - El contexto sobrevive entre sesiones
 - 📊 **Divulgación Progresiva** - Recuperación de memoria en capas con visibilidad del costo de tokens
 - 🔍 **Búsqueda Basada en Habilidades** - Consulta el historial de tu proyecto con la habilidad mem-search
-- 🖥️ **Interfaz de Visor Web** - Transmisión de memoria en tiempo real en http://localhost:37777
+- 🖥️ **Interfaz de Visor Web** - Transmisión de memoria en tiempo real en <http://localhost:37777>
 - 💻 **Habilidad para Claude Desktop** - Busca en la memoria desde conversaciones de Claude Desktop
 - 🔒 **Control de Privacidad** - Usa etiquetas `<private>` para excluir contenido sensible del almacenamiento
 - ⚙️ **Configuración de Contexto** - Control detallado sobre qué contexto se inyecta
 - 🤖 **Operación Automática** - No se requiere intervención manual
-- 🔗 **Citas** - Referencias a observaciones pasadas con IDs (accede vía http://localhost:37777/api/observation/{id} o visualiza todas en el visor web en http://localhost:37777)
+- 🔗 **Citas** - Referencias a observaciones pasadas con IDs (accede vía <http://localhost:37777/api/observation/{id}> o visualiza todas en el visor web en <http://localhost:37777>)
 - 🧪 **Canal Beta** - Prueba características experimentales como Endless Mode mediante cambio de versión
 
 ---
@@ -181,6 +181,7 @@ Ver [Descripción General de la Arquitectura](https://docs.claude-mem.ai/archite
 Claude-Mem proporciona búsqueda inteligente a través de la habilidad mem-search que se invoca automáticamente cuando preguntas sobre trabajo previo:
 
 **Cómo Funciona:**
+
 - Simplemente pregunta naturalmente: *"¿Qué hicimos en la última sesión?"* o *"¿Arreglamos este error antes?"*
 - Claude invoca automáticamente la habilidad mem-search para encontrar contexto relevante
 
@@ -213,7 +214,7 @@ Ver [Guía de Herramientas de Búsqueda](https://docs.claude-mem.ai/usage/search
 
 ## Características Beta
 
-Claude-Mem ofrece un **canal beta** con características experimentales como **Endless Mode** (arquitectura de memoria biomimética para sesiones extendidas). Cambia entre versiones estables y beta desde la interfaz del visor web en http://localhost:37777 → Settings.
+Claude-Mem ofrece un **canal beta** con características experimentales como **Endless Mode** (arquitectura de memoria biomimética para sesiones extendidas). Cambia entre versiones estables y beta desde la interfaz del visor web en <http://localhost:37777> → Settings.
 
 Ver **[Documentación de Características Beta](https://docs.claude-mem.ai/beta-features)** para detalles sobre Endless Mode y cómo probarlo.
 
@@ -287,7 +288,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Soporte
 

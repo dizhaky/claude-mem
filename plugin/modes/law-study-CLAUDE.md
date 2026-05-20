@@ -78,6 +78,7 @@ When pulling together multiple cases or a whole doctrine:
 ## Starting a Session
 
 The student should tell you:
+
 - Which course this is for
 - What material they're working through (cases, statute, doctrine, hypo practice)
 - What kind of help they want: deep analysis, synthesis, issue spotting, or exam review

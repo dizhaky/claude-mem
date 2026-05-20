@@ -115,12 +115,12 @@ Käynnistä Claude Code uudelleen. Aiempien istuntojen konteksti ilmestyy automa
 - 🧠 **Pysyvä muisti** - Konteksti säilyy istuntojen välillä
 - 📊 **Asteittainen paljastaminen** - Kerrostettu muistin haku tokenikustannusten näkyvyydellä
 - 🔍 **Taitopohjainen haku** - Kysy projektihistoriaasi mem-search-taidolla
-- 🖥️ **Web-katselukäyttöliittymä** - Reaaliaikainen muistivirta osoitteessa http://localhost:37777
+- 🖥️ **Web-katselukäyttöliittymä** - Reaaliaikainen muistivirta osoitteessa <http://localhost:37777>
 - 💻 **Claude Desktop -taito** - Hae muistista Claude Desktop -keskusteluissa
 - 🔒 **Yksityisyyden hallinta** - Käytä `<private>`-tageja arkaluonteisen sisällön poissulkemiseen tallennuksesta
 - ⚙️ **Kontekstin määrittely** - Tarkka hallinta siitä, mikä konteksti injektoidaan
 - 🤖 **Automaattinen toiminta** - Ei vaadi manuaalista puuttumista
-- 🔗 **Viittaukset** - Viittaa aiempiin havaintoihin ID:llä (käytettävissä osoitteessa http://localhost:37777/api/observation/{id} tai näytä kaikki web-katselussa osoitteessa http://localhost:37777)
+- 🔗 **Viittaukset** - Viittaa aiempiin havaintoihin ID:llä (käytettävissä osoitteessa <http://localhost:37777/api/observation/{id}> tai näytä kaikki web-katselussa osoitteessa <http://localhost:37777>)
 - 🧪 **Beta-kanava** - Kokeile kokeellisia ominaisuuksia kuten Endless Mode versionvaihdolla
 
 ---
@@ -179,6 +179,7 @@ Katso [Arkkitehtuurin yleiskatsaus](https://docs.claude-mem.ai/architecture/over
 Claude-Mem tarjoaa älykkään haun mem-search-taidon kautta, joka käynnistyy automaattisesti kun kysyt aiemmasta työstä:
 
 **Miten se toimii:**
+
 - Kysy vain luonnollisesti: *"Mitä teimme viime istunnossa?"* tai *"Korjasimmeko tämän bugin aiemmin?"*
 - Claude käynnistää automaattisesti mem-search-taidon löytääkseen relevantin kontekstin
 
@@ -211,7 +212,7 @@ Katso [Hakutyökalujen opas](https://docs.claude-mem.ai/usage/search-tools) yksi
 
 ## Beta-ominaisuudet
 
-Claude-Mem tarjoaa **beta-kanavan** kokeellisilla ominaisuuksilla kuten **Endless Mode** (biomimeettinen muistiarkkitehtuuri pidennetyille istunnoille). Vaihda vakaan ja beta-version välillä web-katselukäyttöliittymästä osoitteessa http://localhost:37777 → Settings.
+Claude-Mem tarjoaa **beta-kanavan** kokeellisilla ominaisuuksilla kuten **Endless Mode** (biomimeettinen muistiarkkitehtuuri pidennetyille istunnoille). Vaihda vakaan ja beta-version välillä web-katselukäyttöliittymästä osoitteessa <http://localhost:37777> → Settings.
 
 Katso **[Beta-ominaisuuksien dokumentaatio](https://docs.claude-mem.ai/beta-features)** yksityiskohdista Endless Moden ja sen kokeilemisen osalta.
 
@@ -285,7 +286,6 @@ Apache-2.0 allows broad use, modification, distribution, and commercial use, sub
 **Ragtime note**: The ragtime/ directory is licensed under the **Apache License 2.0**. See [ragtime/LICENSE](ragtime/LICENSE) for details.
 
 ---
-
 
 ## Tuki
 
